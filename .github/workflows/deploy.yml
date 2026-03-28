@@ -1,8 +1,57 @@
-Course_Language/
-├── .github/
-│   └── workflows/
-│       └── deploy.yml       ← new file
-├── .gitignore
-├── lang/
-├── langfrontend/
-└── admin_frontend/
+﻿name: Deploy to GCP
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy-frontend:
+    name: Build & deploy frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: langfrontend/package-lock.json
+      - name: Build langfrontend
+        working-directory: langfrontend
+        env:
+          VITE_BACKEND_URL: https://infinityodyssey.com
+        run: |
+          npm ci
+          npm run build
+      - name: Upload dist to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USER }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          source: langfrontend/dist/*
+          target: /tmp/langfrontend_dist
+          strip_components: 2
+      - name: Move dist to web root
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USER }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          script: |
+            sudo rm -rf /var/www/langfrontend/*
+            sudo cp -r /tmp/langfrontend_dist/* /var/www/langfrontend/
+            rm -rf /tmp/langfrontend_dist
+  deploy-backend:
+    name: Deploy backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy lang API to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USER }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          script: |
+            cd ${{ secrets.GCP_DEPLOY_PATH }}/lang
+            git pull origin main
+            npm install --omit=dev
+            pm2 restart lang-api --update-env
