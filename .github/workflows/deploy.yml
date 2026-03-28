@@ -1,0 +1,8 @@
+Course_Language/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml       ← new file
+├── .gitignore
+├── lang/
+├── langfrontend/
+└── admin_frontend/
