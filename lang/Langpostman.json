@@ -1,0 +1,1849 @@
+{
+  "info": {
+    "_postman_id": "1bf3098c-ce19-4fda-8b3e-eb47efa2dfc8",
+    "name": "Content Engine Admin API",
+    "description": "Complete admin API for the Content Engine backend.\n\nSet these variables before running:\n- baseUrl: http://localhost:3001\n- adminKey: dev-admin-key-change-me\n\nAll admin routes require X-Admin-Key header (auto-injected via collection variable).\nPublic learner routes (/v1/topics, /v1/navigation) do not require auth.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "adminKey",
+      "value": "dev-admin-key-change-me",
+      "type": "string"
+    },
+    {
+      "key": "langSlug",
+      "value": "java",
+      "type": "string"
+    },
+    {
+      "key": "topicPath",
+      "value": "java.dsa.arrays",
+      "type": "string"
+    },
+    {
+      "key": "diagKey",
+      "value": "java_jvm",
+      "type": "string"
+    },
+    {
+      "key": "quizKey",
+      "value": "q_java_dsa_arr_001",
+      "type": "string"
+    },
+    {
+      "key": "sectionId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏥  Health",
+      "description": "Check backend is alive",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ],
+              "query": []
+            },
+            "description": "Returns { status: 'ok', timestamp }. No auth required. Use to verify backend is running."
+          },
+          "response": []
+        }
+      ],
+      "_postman_isSubFolder": true
+    },
+    {
+      "name": "📊  Stats",
+      "description": "Dashboard counts and breakdowns",
+      "item": [
+        {
+          "name": "Get Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "stats"
+              ],
+              "query": []
+            },
+            "description": "Returns total counts: languages, sections, topics, published_topics, total_blocks, quiz_questions, diagrams."
+          },
+          "response": []
+        },
+        {
+          "name": "Topics by Language",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/stats/topics-by-language",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "stats",
+                "topics-by-language"
+              ],
+              "query": []
+            },
+            "description": "Returns per-language breakdown: total topics, published, unpublished, deep_dives, sections_used."
+          },
+          "response": []
+        },
+        {
+          "name": "Blocks by Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/stats/blocks-by-type",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "stats",
+                "blocks-by-type"
+              ],
+              "query": []
+            },
+            "description": "Returns block type distribution: how many text, concept_cards, code, diagram, quiz etc blocks exist."
+          },
+          "response": []
+        }
+      ],
+      "_postman_isSubFolder": true
+    },
+    {
+      "name": "🚀  Bulk Insert",
+      "description": "Insert complete topic or full language in one call",
+      "item": [
+        {
+          "name": "Bulk Topic",
+          "description": "Insert or replace a full topic with all blocks",
+          "item": [
+            {
+              "name": "Insert DSA Arrays Topic (All Blocks)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/bulk/topic",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "bulk",
+                    "topic"
+                  ],
+                  "query": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"path\": \"java.dsa.arrays\",\n  \"title\": \"Arrays in DSA\",\n  \"section\": \"dsa\",\n  \"difficulty\": \"beginner\",\n  \"estimatedMins\": 15,\n  \"tags\": [\n    \"java\",\n    \"dsa\",\n    \"arrays\",\n    \"sorting\",\n    \"searching\"\n  ],\n  \"isDeepDive\": false,\n  \"isPublished\": true,\n  \"sortOrder\": 1,\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"data\": {\n        \"content\": \"An array is the most fundamental data structure — a fixed-size, contiguous block of memory holding elements of a single type. In Java, arrays are objects that live on the heap. Understanding array internals, common algorithms, and time complexity is the foundation of all DSA study.\"\n      }\n    },\n    {\n      \"type\": \"concept_cards\",\n      \"data\": {\n        \"items\": [\n          {\n            \"icon\": \"📏\",\n            \"title\": \"Fixed Size\",\n            \"desc\": \"Size is declared at creation and cannot change. new int[5] allocates exactly 5 elements. Use ArrayList for dynamic sizing.\"\n          },\n          {\n            \"icon\": \"0️⃣\",\n            \"title\": \"Zero-based Index\",\n            \"desc\": \"First element is [0], last is [length-1]. Accessing out of bounds throws ArrayIndexOutOfBoundsException at runtime.\"\n          },\n          {\n            \"icon\": \"⚡\",\n            \"title\": \"O(1) Access\",\n            \"desc\": \"Random access by index is O(1) — elements are contiguous in memory. Address = base + (index × element_size).\"\n          },\n          {\n            \"icon\": \"🔄\",\n            \"title\": \"O(n) Insert\",\n            \"desc\": \"Inserting or deleting in the middle requires shifting all subsequent elements — O(n) worst case.\"\n          },\n          {\n            \"icon\": \"🔲\",\n            \"title\": \"2D Arrays\",\n            \"desc\": \"int[][] grid = new int[3][4] — array of arrays. Rows can have different lengths (jagged arrays).\"\n          },\n          {\n            \"icon\": \"🛠️\",\n            \"title\": \"Arrays Utility\",\n            \"desc\": \"Arrays.sort() O(n log n). Arrays.binarySearch() O(log n) on sorted. Arrays.fill(), copyOf(), toString().\"\n          }\n        ]\n      }\n    },\n    {\n      \"type\": \"diagram\",\n      \"data\": {\n        \"diagramKey\": \"java_dsa_array_complexity\",\n        \"title\": \"Array Operations — Big-O\",\n        \"diagramType\": \"mermaid\",\n        \"mermaid\": \"graph LR\\n  subgraph Array Operations\\n    A[Access by index] -->|O-1| R1[Fastest]\\n    B[Search unsorted] -->|O-n| R2[Linear scan]\\n    C[Search sorted]   -->|O-logn| R3[Binary search]\\n    D[Insert at end]   -->|O-1| R4[Amortized]\\n    E[Insert middle]   -->|O-n| R5[Must shift]\\n  end\\n  style R1 fill:#166534,color:#fff\\n  style R3 fill:#1d4ed8,color:#fff\\n  style R4 fill:#166534,color:#fff\\n  style R2 fill:#854d0e,color:#fff\\n  style R5 fill:#991b1b,color:#fff\"\n      }\n    },\n    {\n      \"type\": \"code\",\n      \"data\": {\n        \"language\": \"java\",\n        \"filename\": \"ArraysDSA.java\",\n        \"runnable\": true,\n        \"snippet\": \"import java.util.Arrays;\\n\\npublic class ArraysDSA {\\n\\n    // Linear Search -- O(n)\\n    static int linearSearch(int[] arr, int target) {\\n        for (int i = 0; i < arr.length; i++)\\n            if (arr[i] == target) return i;\\n        return -1;\\n    }\\n\\n    // Binary Search -- O(log n) -- array must be sorted\\n    static int binarySearch(int[] arr, int target) {\\n        int lo = 0, hi = arr.length - 1;\\n        while (lo <= hi) {\\n            int mid = lo + (hi - lo) / 2;\\n            if      (arr[mid] == target) return mid;\\n            else if (arr[mid] <  target) lo = mid + 1;\\n            else                         hi = mid - 1;\\n        }\\n        return -1;\\n    }\\n\\n    // Bubble Sort -- O(n^2)\\n    static void bubbleSort(int[] arr) {\\n        for (int i = 0; i < arr.length - 1; i++)\\n            for (int j = 0; j < arr.length - 1 - i; j++)\\n                if (arr[j] > arr[j + 1]) {\\n                    int tmp = arr[j]; arr[j] = arr[j+1]; arr[j+1] = tmp;\\n                }\\n    }\\n\\n    public static void main(String[] args) {\\n        int[] nums = {64, 34, 25, 12, 22, 11, 90};\\n        System.out.println(\\\"Unsorted: \\\" + Arrays.toString(nums));\\n        System.out.println(\\\"Linear(25): index \\\" + linearSearch(nums, 25));\\n        bubbleSort(nums);\\n        System.out.println(\\\"Sorted  : \\\" + Arrays.toString(nums));\\n        System.out.println(\\\"Binary(25): index \\\" + binarySearch(nums, 25));\\n        int[] arr2 = {5, 2, 8, 1, 9, 3};\\n        Arrays.sort(arr2);\\n        System.out.println(\\\"Arrays.sort: \\\" + Arrays.toString(arr2));\\n        System.out.println(\\\"binarySearch(8): \\\" + Arrays.binarySearch(arr2, 8));\\n    }\\n}\",\n        \"expectedOutput\": \"Unsorted: [64, 34, 25, 12, 22, 11, 90]\\nLinear(25): index 2\\nSorted  : [11, 12, 22, 25, 34, 64, 90]\\nBinary(25): index 3\\nArrays.sort: [1, 2, 3, 5, 8, 9]\\nbinarySearch(8): 4\"\n      }\n    },\n    {\n      \"type\": \"note\",\n      \"data\": {\n        \"content\": \"**Binary search only works on sorted arrays.** Always sort first. Use lo + (hi - lo) / 2 instead of (lo + hi) / 2 to avoid integer overflow when lo and hi are large values.\"\n      }\n    },\n    {\n      \"type\": \"warning\",\n      \"data\": {\n        \"content\": \"Arrays.sort() on primitives uses Dual-Pivot Quicksort — O(n²) worst case. Arrays.sort() on Object arrays uses TimSort — O(n log n) guaranteed and stable. For strictly worst-case guarantees on primitives, implement merge sort manually.\"\n      }\n    },\n    {\n      \"type\": \"quiz\",\n      \"data\": {\n        \"questionId\": \"q_java_dsa_arr_001\",\n        \"questionText\": \"What is the time complexity of accessing an element by index in a Java array?\",\n        \"questionType\": \"mcq\",\n        \"options\": [\n          {\n            \"id\": \"a\",\n            \"text\": \"O(n)\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"b\",\n            \"text\": \"O(log n)\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"c\",\n            \"text\": \"O(1)\",\n            \"correct\": true\n          },\n          {\n            \"id\": \"d\",\n            \"text\": \"O(n²)\",\n            \"correct\": false\n          }\n        ],\n        \"explanation\": \"Array elements are stored contiguously in memory. The address of any element is computed directly: base_address + (index × element_size). This is constant-time regardless of array size.\"\n      }\n    },\n    {\n      \"type\": \"quiz\",\n      \"data\": {\n        \"questionId\": \"q_java_dsa_arr_002\",\n        \"questionText\": \"What exception is thrown when you access arr[arr.length] in Java?\",\n        \"questionType\": \"mcq\",\n        \"options\": [\n          {\n            \"id\": \"a\",\n            \"text\": \"NullPointerException\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"b\",\n            \"text\": \"ArrayIndexOutOfBoundsException\",\n            \"correct\": true\n          },\n          {\n            \"id\": \"c\",\n            \"text\": \"IndexOutOfBoundsException\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"d\",\n            \"text\": \"IllegalArgumentException\",\n            \"correct\": false\n          }\n        ],\n        \"explanation\": \"Valid indices are 0 to arr.length-1. arr[arr.length] is one past the end. Java throws ArrayIndexOutOfBoundsException (a subclass of IndexOutOfBoundsException).\"\n      }\n    },\n    {\n      \"type\": \"quiz\",\n      \"data\": {\n        \"questionId\": \"q_java_dsa_arr_003\",\n        \"questionText\": \"What is the prerequisite for binary search to work correctly?\",\n        \"questionType\": \"mcq\",\n        \"options\": [\n          {\n            \"id\": \"a\",\n            \"text\": \"Array must contain only integers\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"b\",\n            \"text\": \"Array must be sorted\",\n            \"correct\": true\n          },\n          {\n            \"id\": \"c\",\n            \"text\": \"Array length must be a power of 2\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"d\",\n            \"text\": \"Array must have no duplicate values\",\n            \"correct\": false\n          }\n        ],\n        \"explanation\": \"Binary search repeatedly halves the search space by comparing the target to the middle element. This only works if the array is sorted — on an unsorted array it can miss elements entirely.\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Inserts a complete Java DSA Arrays topic.\n\nIncludes all block types:\n- text\n- concept_cards (6 cards)\n- diagram (mermaid inline)\n- code (runnable playground)\n- note\n- warning\n- quiz x3\n\nQuiz questions are automatically extracted into quiz_questions table.\nMermaid diagram stored in diagrams table.\nRedis cache flushed automatically."
+              },
+              "response": []
+            },
+            {
+              "name": "Insert Deep Dive Child (2D Arrays)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/bulk/topic",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "bulk",
+                    "topic"
+                  ],
+                  "query": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"path\": \"java.dsa.arrays.multidimensional\",\n  \"title\": \"Multidimensional & Jagged Arrays\",\n  \"section\": \"dsa\",\n  \"difficulty\": \"intermediate\",\n  \"estimatedMins\": 10,\n  \"tags\": [\n    \"java\",\n    \"dsa\",\n    \"2d-array\",\n    \"jagged\",\n    \"matrix\"\n  ],\n  \"isDeepDive\": true,\n  \"isPublished\": true,\n  \"sortOrder\": 1,\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"data\": {\n        \"content\": \"Java supports multidimensional arrays as arrays of arrays. A 2D array int[][] grid is an array where each element is itself an int[]. This means rows can have different lengths — jagged arrays — something not possible in many other languages.\"\n      }\n    },\n    {\n      \"type\": \"concept_cards\",\n      \"data\": {\n        \"items\": [\n          {\n            \"icon\": \"🔲\",\n            \"title\": \"Regular 2D\",\n            \"desc\": \"int[][] grid = new int[3][4] — 3 rows, 4 columns each. grid[row][col] to access. grid.length = rows, grid[0].length = cols.\"\n          },\n          {\n            \"icon\": \"📐\",\n            \"title\": \"Jagged Array\",\n            \"desc\": \"Omit second dimension: int[][] tri = new int[3][]. Assign each row separately: tri[0] = new int[1]. Different row lengths allowed.\"\n          },\n          {\n            \"icon\": \"🧮\",\n            \"title\": \"Matrix Ops\",\n            \"desc\": \"Traversal is O(rows × cols). Matrix multiplication is O(n³). Nested loops: outer for row, inner for column.\"\n          }\n        ]\n      }\n    },\n    {\n      \"type\": \"code\",\n      \"data\": {\n        \"language\": \"java\",\n        \"filename\": \"JaggedArray.java\",\n        \"runnable\": true,\n        \"snippet\": \"public class JaggedArray {\\n    public static void main(String[] args) {\\n        int[][] matrix = {{1,2,3},{4,5,6},{7,8,9}};\\n        System.out.println(\\\"matrix[1][2] = \\\" + matrix[1][2]);\\n\\n        // Jagged array\\n        int[][] tri = new int[3][];\\n        for (int i = 0; i < 3; i++) tri[i] = new int[i + 1];\\n        int val = 1;\\n        for (int[] row : tri)\\n            for (int j = 0; j < row.length; j++) row[j] = val++;\\n\\n        System.out.println(\\\"Jagged:\\\");\\n        for (int[] row : tri) {\\n            for (int v : row) System.out.print(v + \\\" \\\");\\n            System.out.println();\\n        }\\n    }\\n}\",\n        \"expectedOutput\": \"matrix[1][2] = 6\\nJagged:\\n1 \\n2 3 \\n4 5 6 \"\n      }\n    },\n    {\n      \"type\": \"quiz\",\n      \"data\": {\n        \"questionId\": \"q_java_dsa_arr_2d_001\",\n        \"questionText\": \"What does int[][] tri = new int[3][] create?\",\n        \"questionType\": \"mcq\",\n        \"options\": [\n          {\n            \"id\": \"a\",\n            \"text\": \"A 3×3 square matrix filled with zeros\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"b\",\n            \"text\": \"A 3-row array where each row length is unset\",\n            \"correct\": true\n          },\n          {\n            \"id\": \"c\",\n            \"text\": \"A compile error — second dimension required\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"d\",\n            \"text\": \"Three null references\",\n            \"correct\": false\n          }\n        ],\n        \"explanation\": \"Omitting the second dimension creates a jagged array skeleton — 3 null int[] references. You then assign each row: tri[0] = new int[1]; This allows rows of different lengths.\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Inserts a deep dive child topic under java.dsa.arrays.\n\nThe path java.dsa.arrays.multidimensional automatically makes this a child of java.dsa.arrays.\nisDeepDive: true flags it for the deep dive section.\n\nSend AFTER the parent topic is created."
+              },
+              "response": []
+            },
+            {
+              "name": "Insert Minimal Topic",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/bulk/topic",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "bulk",
+                    "topic"
+                  ],
+                  "query": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"path\": \"java.dsa.linkedlist\",\n  \"title\": \"Linked List\",\n  \"section\": \"dsa\",\n  \"difficulty\": \"intermediate\",\n  \"estimatedMins\": 12,\n  \"tags\": [\n    \"java\",\n    \"dsa\",\n    \"linkedlist\"\n  ],\n  \"isPublished\": true,\n  \"sortOrder\": 2,\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"data\": {\n        \"content\": \"A linked list is a linear data structure where elements (nodes) are not stored in contiguous memory. Each node contains data and a pointer to the next node.\"\n      }\n    },\n    {\n      \"type\": \"concept_cards\",\n      \"data\": {\n        \"items\": [\n          {\n            \"icon\": \"🔗\",\n            \"title\": \"Node\",\n            \"desc\": \"Each node holds data and a reference (next) to the next node. Last node's next is null.\"\n          },\n          {\n            \"icon\": \"⚡\",\n            \"title\": \"O(1) Insert\",\n            \"desc\": \"Insert at head or after a known node is O(1) — just update pointers. No shifting like arrays.\"\n          },\n          {\n            \"icon\": \"🔍\",\n            \"title\": \"O(n) Search\",\n            \"desc\": \"No random access. Must traverse from head to find element. O(n) for get by index.\"\n          }\n        ]\n      }\n    },\n    {\n      \"type\": \"quiz\",\n      \"data\": {\n        \"questionId\": \"q_java_dsa_ll_001\",\n        \"questionText\": \"What is the time complexity of inserting at the head of a singly linked list?\",\n        \"questionType\": \"mcq\",\n        \"options\": [\n          {\n            \"id\": \"a\",\n            \"text\": \"O(n)\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"b\",\n            \"text\": \"O(log n)\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"c\",\n            \"text\": \"O(1)\",\n            \"correct\": true\n          },\n          {\n            \"id\": \"d\",\n            \"text\": \"O(n²)\",\n            \"correct\": false\n          }\n        ],\n        \"explanation\": \"Inserting at the head only requires updating the new node's next pointer and the head pointer — constant time regardless of list size.\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Minimal topic with text, concept_cards, and one quiz. Good template for new topics."
+              },
+              "response": []
+            }
+          ],
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "Bulk Language",
+          "description": "Insert full language with sections and topics",
+          "item": [
+            {
+              "name": "Insert Python Language (Full)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/bulk/language",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "bulk",
+                    "language"
+                  ],
+                  "query": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"language\": {\n    \"slug\": \"python\",\n    \"name\": \"Python\",\n    \"description\": \"Simple, readable, powerful\",\n    \"iconUrl\": \"/icons/python.svg\",\n    \"sortOrder\": 2,\n    \"meta\": {\n      \"color\": \"#3572A5\",\n      \"tagline\": \"Simple, readable, powerful\"\n    }\n  },\n  \"sections\": [\n    {\n      \"slug\": \"core-language\",\n      \"title\": \"Core Language\",\n      \"sortOrder\": 1\n    },\n    {\n      \"slug\": \"advanced\",\n      \"title\": \"Advanced\",\n      \"sortOrder\": 2\n    }\n  ],\n  \"topics\": [\n    {\n      \"path\": \"python.basics\",\n      \"title\": \"Python Basics\",\n      \"section\": \"core-language\",\n      \"difficulty\": \"beginner\",\n      \"estimatedMins\": 8,\n      \"tags\": [\n        \"python\",\n        \"basics\"\n      ],\n      \"isPublished\": true,\n      \"blocks\": [\n        {\n          \"type\": \"text\",\n          \"data\": {\n            \"content\": \"Python is a high-level, dynamically typed language. Programs are run directly by the CPython interpreter — no compilation step needed.\"\n          }\n        },\n        {\n          \"type\": \"concept_cards\",\n          \"data\": {\n            \"items\": [\n              {\n                \"icon\": \"🐍\",\n                \"title\": \"Interpreted\",\n                \"desc\": \"Python runs line by line. No .class files — edit and run immediately with python file.py.\"\n              },\n              {\n                \"icon\": \"📦\",\n                \"title\": \"pip\",\n                \"desc\": \"Package manager. pip install requests installs a library. Track dependencies in requirements.txt.\"\n              },\n              {\n                \"icon\": \"🔤\",\n                \"title\": \"Dynamic Types\",\n                \"desc\": \"No type declarations needed. x = 42 then x = 'hello' is valid. Type errors surface at runtime, not compile time.\"\n              }\n            ]\n          }\n        },\n        {\n          \"type\": \"code\",\n          \"data\": {\n            \"language\": \"python\",\n            \"filename\": \"hello.py\",\n            \"runnable\": false,\n            \"snippet\": \"# Hello World\\nprint(\\\"Hello, World!\\\")\\n\\nname = \\\"Python\\\"\\nversion = 3.12\\nprint(f\\\"Welcome to {name} {version}\\\")\\n\\n# Dynamic typing\\nx = 42\\nprint(type(x))    # <class 'int'>\\nx = \\\"now a string\\\"\\nprint(type(x))    # <class 'str'>\"\n          }\n        },\n        {\n          \"type\": \"quiz\",\n          \"data\": {\n            \"questionId\": \"q_python_basics_001\",\n            \"questionText\": \"Python is which type of language?\",\n            \"questionType\": \"mcq\",\n            \"options\": [\n              {\n                \"id\": \"a\",\n                \"text\": \"Compiled to bytecode then machine code\",\n                \"correct\": false\n              },\n              {\n                \"id\": \"b\",\n                \"text\": \"Interpreted and dynamically typed\",\n                \"correct\": true\n              },\n              {\n                \"id\": \"c\",\n                \"text\": \"Statically typed like Java\",\n                \"correct\": false\n              },\n              {\n                \"id\": \"d\",\n                \"text\": \"Compiled to native code directly\",\n                \"correct\": false\n              }\n            ],\n            \"explanation\": \"Python is interpreted (runs line by line via CPython) and dynamically typed (variables can hold any type, checked at runtime, not compile time).\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Inserts a complete Python language with:\n- Language metadata (slug, name, color, tagline)\n- 2 sections (core-language, advanced)\n- 1 topic (python.basics) with blocks\n\nResponse includes ok, language, sections[], topics[], errors[]\nHTTP 207 if any topics fail (partial success)."
+              },
+              "response": []
+            },
+            {
+              "name": "Insert Language + Sections Only (No Topics)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/bulk/language",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "bulk",
+                    "language"
+                  ],
+                  "query": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"language\": {\n    \"slug\": \"typescript\",\n    \"name\": \"TypeScript\",\n    \"description\": \"JavaScript with types\",\n    \"sortOrder\": 3,\n    \"meta\": {\n      \"color\": \"#3178C6\",\n      \"tagline\": \"JavaScript that scales\"\n    }\n  },\n  \"sections\": [\n    {\n      \"slug\": \"basics\",\n      \"title\": \"TypeScript Basics\",\n      \"sortOrder\": 1\n    },\n    {\n      \"slug\": \"advanced\",\n      \"title\": \"Advanced Types\",\n      \"sortOrder\": 2\n    }\n  ],\n  \"topics\": []\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Create just the language and sections without any topics yet. Topics can be added later via /bulk/topic."
+              },
+              "response": []
+            }
+          ],
+          "_postman_isSubFolder": true
+        }
+      ],
+      "_postman_isSubFolder": true
+    },
+    {
+      "name": "🌐  Languages",
+      "description": "CRUD for languages and sections",
+      "item": [
+        {
+          "name": "List All Languages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/languages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "languages"
+              ],
+              "query": []
+            },
+            "description": "Returns all languages including inactive ones. Includes id, slug, name, iconUrl, meta, isActive, sortOrder."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Language + Sections",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/languages/{{langSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "languages",
+                "{{langSlug}}"
+              ],
+              "query": []
+            },
+            "description": "Returns language details + all its sections.\nSet langSlug variable to the language slug."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Language",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/languages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "languages"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"go\",\n  \"name\": \"Go\",\n  \"description\": \"Simple, fast, concurrent\",\n  \"iconUrl\": \"/icons/go.svg\",\n  \"sortOrder\": 4,\n  \"meta\": {\n    \"color\": \"#00ADD8\",\n    \"tagline\": \"Fast, simple, reliable\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a new language. slug must be unique and URL-safe (lowercase, hyphens ok)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Language",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/languages/{{langSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "languages",
+                "{{langSlug}}"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Java\",\n  \"description\": \"Write once, run anywhere\",\n  \"meta\": {\n    \"color\": \"#f59e0b\",\n    \"tagline\": \"Write once, run anywhere\",\n    \"version\": \"21 LTS\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update language fields. All fields are optional — only provided fields are updated (COALESCE)."
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Language (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/languages/{{langSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "languages",
+                "{{langSlug}}"
+              ],
+              "query": []
+            },
+            "description": "Sets is_active = false. Language is hidden from learners but data is preserved.\nNOT a hard delete."
+          },
+          "response": []
+        },
+        {
+          "name": "List Sections for Language",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/languages/{{langSlug}}/sections",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "languages",
+                "{{langSlug}}",
+                "sections"
+              ],
+              "query": []
+            },
+            "description": "Returns all sections for a language, ordered by sort_order."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Section",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/languages/{{langSlug}}/sections",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "languages",
+                "{{langSlug}}",
+                "sections"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"dsa\",\n  \"title\": \"Data Structures & Algorithms\",\n  \"description\": \"Arrays, lists, trees, graphs, sorting, searching\",\n  \"sortOrder\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a new section under a language. slug must be unique within the language."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Section",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/languages/sections/{{sectionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "languages",
+                "sections",
+                "{{sectionId}}"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"DSA\",\n  \"description\": \"Updated description\",\n  \"sortOrder\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update section fields. Set sectionId variable to the section UUID."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Section",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/languages/sections/{{sectionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "languages",
+                "sections",
+                "{{sectionId}}"
+              ],
+              "query": []
+            },
+            "description": "Hard delete a section. Topics that referenced it will have section_id set to NULL."
+          },
+          "response": []
+        }
+      ],
+      "_postman_isSubFolder": true
+    },
+    {
+      "name": "📚  Topics",
+      "description": "CRUD for topics and blocks",
+      "item": [
+        {
+          "name": "List & Read",
+          "description": "Query and fetch topics",
+          "item": [
+            {
+              "name": "List All Topics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/topics?language=java&limit=50&offset=0",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "topics"
+                  ],
+                  "query": [
+                    {
+                      "key": "language",
+                      "value": "java",
+                      "description": "Filter by language slug"
+                    },
+                    {
+                      "key": "section",
+                      "value": "",
+                      "description": "Filter by section slug",
+                      "disabled": true
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "description": "Search title or path",
+                      "disabled": true
+                    },
+                    {
+                      "key": "limit",
+                      "value": "50",
+                      "description": "Page size (max 100)"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "description": "Pagination offset"
+                    }
+                  ]
+                },
+                "description": "Paginated list of topics. Response includes total, limit, offset, topics[].\nFilter by language, section, or search term."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Full Topic (with blocks)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/topics/{{topicPath}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "topics",
+                    "{{topicPath}}"
+                  ],
+                  "query": []
+                },
+                "description": "Returns full topic including all blocks array.\nSet topicPath variable e.g. java.dsa.arrays"
+              },
+              "response": []
+            }
+          ],
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "Create & Update",
+          "description": "Create new topics or update existing",
+          "item": [
+            {
+              "name": "Create Topic (POST)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/topics",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "topics"
+                  ],
+                  "query": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"meta\": {\n    \"path\": \"java.dsa.stack\",\n    \"title\": \"Stack\",\n    \"section\": \"dsa\",\n    \"difficulty\": \"beginner\",\n    \"estimatedMins\": 10,\n    \"tags\": [\n      \"java\",\n      \"dsa\",\n      \"stack\"\n    ],\n    \"isDeepDive\": false,\n    \"isPublished\": true,\n    \"sortOrder\": 3\n  },\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"data\": {\n        \"content\": \"A stack is a LIFO (Last In, First Out) data structure. The last element pushed is the first to be popped.\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Create a new topic. Uses { meta: {}, blocks: [] } envelope shape (same as PUT)."
+              },
+              "response": []
+            },
+            {
+              "name": "Replace Full Topic (PUT)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/topics/{{topicPath}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "topics",
+                    "{{topicPath}}"
+                  ],
+                  "query": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"meta\": {\n    \"title\": \"Arrays in DSA (Updated)\",\n    \"difficulty\": \"intermediate\",\n    \"estimatedMins\": 18\n  },\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"data\": {\n        \"content\": \"Updated intro text.\"\n      }\n    },\n    {\n      \"type\": \"note\",\n      \"data\": {\n        \"content\": \"This topic has been updated.\"\n      }\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "FULLY replaces topic metadata + all blocks.\nAll existing blocks are deleted and replaced with the new array.\nTo keep blocks, fetch the topic first and include existing blocks."
+              },
+              "response": []
+            },
+            {
+              "name": "Update Metadata Only (PATCH)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/topics/{{topicPath}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "topics",
+                    "{{topicPath}}"
+                  ],
+                  "query": []
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Arrays in DSA\",\n  \"difficulty\": \"intermediate\",\n  \"estimatedMins\": 18,\n  \"isPublished\": true,\n  \"tags\": [\n    \"java\",\n    \"dsa\",\n    \"arrays\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "Updates only the metadata fields provided. Blocks are NOT touched.\nGood for changing difficulty, publish status, sort order, tags.\nAll fields are optional."
+              },
+              "response": []
+            }
+          ],
+          "_postman_isSubFolder": true
+        },
+        {
+          "name": "Delete",
+          "description": "Unpublish or remove topics",
+          "item": [
+            {
+              "name": "Unpublish Topic (Soft Delete)",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Admin-Key",
+                    "value": "{{adminKey}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/admin/topics/{{topicPath}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "v1",
+                    "admin",
+                    "topics",
+                    "{{topicPath}}"
+                  ],
+                  "query": []
+                },
+                "description": "Sets is_published = false. Topic is hidden from learners.\nData is preserved. Re-publish with PATCH { isPublished: true }."
+              },
+              "response": []
+            }
+          ],
+          "_postman_isSubFolder": true
+        }
+      ],
+      "_postman_isSubFolder": true
+    },
+    {
+      "name": "🗺️  Diagrams",
+      "description": "CRUD for the diagram library",
+      "item": [
+        {
+          "name": "List All Diagrams",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/diagrams",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "diagrams"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search diagram key",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "",
+                  "description": "Filter: svg | mermaid | png",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns all diagrams. Optionally filter by type or search by key."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Diagram",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/diagrams/{{diagKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "diagrams",
+                "{{diagKey}}"
+              ],
+              "query": []
+            },
+            "description": "Returns diagram with full data content (svg string, mermaid source, or url)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create SVG Diagram",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/diagrams",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "diagrams"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diagramKey\": \"java_dsa_stack\",\n  \"title\": \"Stack Operations\",\n  \"type\": \"svg\",\n  \"data\": {\n    \"svg\": \"<div style='background:#0d0d20;padding:24px;border-radius:14px;'><svg viewBox='0 0 300 200'><rect x='50' y='20' width='200' height='40' rx='8' fill='rgba(245,158,11,.2)' stroke='#f59e0b' stroke-width='1.5'/><text x='150' y='45' text-anchor='middle' fill='#f59e0b' font-size='14' font-weight='700'>push(3) → top</text><rect x='50' y='70' width='200' height='40' rx='8' fill='rgba(245,158,11,.12)' stroke='#f59e0b' stroke-width='1'/><text x='150' y='95' text-anchor='middle' fill='#e2e8f0' font-size='14'>2</text><rect x='50' y='120' width='200' height='40' rx='8' fill='rgba(245,158,11,.06)' stroke='#f59e0b' stroke-width='1'/><text x='150' y='145' text-anchor='middle' fill='#e2e8f0' font-size='14'>1 ← bottom</text></svg></div>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a diagram with raw SVG/HTML content.\nThe svg field holds the full HTML string — typically generated by running npm run export:diagrams."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Mermaid Diagram",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/diagrams",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "diagrams"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diagramKey\": \"java_dsa_bst\",\n  \"title\": \"Binary Search Tree\",\n  \"type\": \"mermaid\",\n  \"data\": {\n    \"source\": \"graph TD\\n  R[40] --> L[20]\\n  R --> RR[60]\\n  L --> LL[10]\\n  L --> LR[30]\\n  RR --> RL[50]\\n  RR --> RRR[70]\\n  style R fill:#1e3a5f,color:#58a6ff\\n  style L fill:#1a2e1a,color:#3fb950\\n  style RR fill:#1a2e1a,color:#3fb950\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a diagram using Mermaid source. Frontend renders it client-side with the Mermaid library."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Diagram",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/diagrams/{{diagKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "diagrams",
+                "{{diagKey}}"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Title\",\n  \"data\": {\n    \"source\": \"graph TD\\n  A --> B\\n  B --> C\\n  C --> D\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update diagram content. Only provided fields are changed."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Diagram",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/diagrams/{{diagKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "diagrams",
+                "{{diagKey}}"
+              ],
+              "query": []
+            },
+            "description": "Hard deletes the diagram. Topic blocks referencing this diagramKey will show a placeholder until a new diagram with the same key is created."
+          },
+          "response": []
+        }
+      ],
+      "_postman_isSubFolder": true
+    },
+    {
+      "name": "🧠  Quizzes",
+      "description": "CRUD for quiz questions",
+      "item": [
+        {
+          "name": "List Quiz Questions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/quizzes?limit=30&offset=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "quizzes"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search key or question text",
+                  "disabled": true
+                },
+                {
+                  "key": "difficulty",
+                  "value": "",
+                  "description": "beginner|intermediate|advanced",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "30",
+                  "description": "Page size"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Pagination offset"
+                }
+              ]
+            },
+            "description": "Paginated list of quiz questions. Response includes total, limit, offset, questions[]."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Single Question",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/quizzes/{{quizKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "quizzes",
+                "{{quizKey}}"
+              ],
+              "query": []
+            },
+            "description": "Returns full question with options array and explanation."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Question (MCQ)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/quizzes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "quizzes"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionKey\": \"q_java_dsa_stack_001\",\n  \"questionText\": \"What does LIFO stand for in a Stack?\",\n  \"questionType\": \"mcq\",\n  \"difficulty\": \"beginner\",\n  \"options\": [\n    {\n      \"id\": \"a\",\n      \"text\": \"Last In, First Out\",\n      \"correct\": true\n    },\n    {\n      \"id\": \"b\",\n      \"text\": \"Last In, First Over\",\n      \"correct\": false\n    },\n    {\n      \"id\": \"c\",\n      \"text\": \"Last Index, First Out\",\n      \"correct\": false\n    },\n    {\n      \"id\": \"d\",\n      \"text\": \"Large Input, Fast Output\",\n      \"correct\": false\n    }\n  ],\n  \"explanation\": \"LIFO = Last In, First Out. The most recently pushed element is the first to be popped. Like a stack of plates — you take from the top.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a standalone quiz question. Usually you embed questions in blocks via /bulk/topic instead."
+          },
+          "response": []
+        },
+        {
+          "name": "Create True/False Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/quizzes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "quizzes"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionKey\": \"q_java_dsa_arr_tf_001\",\n  \"questionText\": \"Java arrays can be resized after creation.\",\n  \"questionType\": \"true-false\",\n  \"difficulty\": \"beginner\",\n  \"options\": [\n    {\n      \"id\": \"true\",\n      \"text\": \"True\",\n      \"correct\": false\n    },\n    {\n      \"id\": \"false\",\n      \"text\": \"False\",\n      \"correct\": true\n    }\n  ],\n  \"explanation\": \"Java arrays are fixed size — once created with new int[5], the size is permanent. Use ArrayList<Integer> for dynamic sizing.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Create a true/false question. questionType must be 'true-false'."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Question",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/quizzes/{{quizKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "quizzes",
+                "{{quizKey}}"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"explanation\": \"Updated explanation with more detail.\",\n  \"difficulty\": \"intermediate\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Update question fields. Only provided fields are changed."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Question",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/quizzes/{{quizKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "quizzes",
+                "{{quizKey}}"
+              ],
+              "query": []
+            },
+            "description": "Hard deletes the question. Topic blocks referencing this questionId will show a placeholder."
+          },
+          "response": []
+        }
+      ],
+      "_postman_isSubFolder": true
+    },
+    {
+      "name": "⚡  Cache",
+      "description": "Flush Redis cache after content changes",
+      "item": [
+        {
+          "name": "Flush All Cache",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/cache/flush",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "cache",
+                "flush"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scope\": \"all\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Flushes ALL cached data — topics, nav trees, language list.\nUse after running npm run seed or making bulk changes.\nReturns count of deleted keys per category."
+          },
+          "response": []
+        },
+        {
+          "name": "Flush Single Topic",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/cache/flush",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "cache",
+                "flush"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scope\": \"topic\",\n  \"path\": \"{{topicPath}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Flushes one topic response + its language nav tree.\nUse after editing a specific topic.\nSet topicPath variable first."
+          },
+          "response": []
+        },
+        {
+          "name": "Flush All Topics",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/cache/flush",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "cache",
+                "flush"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scope\": \"topics\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Flushes all topic responses. Nav trees are kept.\nGood after a batch topic update."
+          },
+          "response": []
+        },
+        {
+          "name": "Flush Nav Tree (One Language)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/cache/flush",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "cache",
+                "flush"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scope\": \"nav\",\n  \"langSlug\": \"{{langSlug}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Flushes the sidebar navigation tree for one language.\nUse after adding, reordering, or renaming sections/topics."
+          },
+          "response": []
+        },
+        {
+          "name": "List Cache Keys (Debug)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Admin-Key",
+                "value": "{{adminKey}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/admin/cache/keys?pattern=ce:topic:v1:java*",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "admin",
+                "cache",
+                "keys?pattern=ce:topic:v1:java*"
+              ],
+              "query": []
+            },
+            "description": "Lists matching Redis keys. Use for debugging.\npattern supports * glob.\nExamples:\n  ce:topic:v1:java* — all Java topic cache entries\n  ce:nav:v1:*       — all nav trees\n  ce:*              — everything"
+          },
+          "response": []
+        }
+      ],
+      "_postman_isSubFolder": true
+    },
+    {
+      "name": "👁️  Public Learner API",
+      "description": "Read-only routes used by the learner frontend (no auth required)",
+      "item": [
+        {
+          "name": "Get All Languages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/languages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "languages"
+              ],
+              "query": []
+            },
+            "description": "Returns active languages for the homepage language selector."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Navigation Tree",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/navigation/{{langSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "navigation",
+                "{{langSlug}}"
+              ],
+              "query": []
+            },
+            "description": "Returns full sidebar tree: language metadata + sections + nested topics.\nCached 1 hour. Flush with /admin/cache/flush { scope: 'nav' }."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Topic Content",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/topics/{{topicPath}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "topics",
+                "{{topicPath}}"
+              ],
+              "query": []
+            },
+            "description": "Returns full topic: metadata + breadcrumb + children + enriched blocks.\nBlocks include quiz question data and diagram content injected by the backend.\nCached 30 minutes."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Topic Children",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/topics/children/{{topicPath}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "topics",
+                "children",
+                "{{topicPath}}"
+              ],
+              "query": []
+            },
+            "description": "Returns direct children only — used by sidebar lazy-loading."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Topic Subtree",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/topics/subtree/{{topicPath}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "topics",
+                "subtree",
+                "{{topicPath}}"
+              ],
+              "query": []
+            },
+            "description": "Returns all descendants at any depth — used for section pre-fetching."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Breadcrumb",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/topics/breadcrumb/{{topicPath}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "topics",
+                "breadcrumb",
+                "{{topicPath}}"
+              ],
+              "query": []
+            },
+            "description": "Returns ancestor chain root → leaf for the given path."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Quiz Question",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/quiz/questions/{{quizKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "quiz",
+                "questions",
+                "{{quizKey}}"
+              ],
+              "query": []
+            },
+            "description": "Returns a single quiz question normalised for the frontend Quiz component.\nResponse: { question: { q, opts, correct, exp } }"
+          },
+          "response": []
+        }
+      ],
+      "_postman_isSubFolder": true
+    }
+  ]
+}

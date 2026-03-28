@@ -1,0 +1,446 @@
+{
+    "info": {
+      "_postman_id": "21865082-67ef-48cd-ac5b-1759107a3e4a",
+      "name": "Content Engine — Bulk & Delete APIs",
+      "description": "Focused collection covering:\n1. Bulk create topic (auto section + auto cache flush)\n2. Bulk create language (sections + topics + cache)\n3. Delete topic (soft / hard / cascade)\n4. Delete language (soft / hard)\n\nSet variables before running:\n  baseUrl  → http://localhost:3001\n  adminKey → your-actual-secret-key",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "http://localhost:3001",
+        "type": "string"
+      },
+      {
+        "key": "adminKey",
+        "value": "your-actual-secret-key",
+        "type": "string"
+      },
+      {
+        "key": "topicPath",
+        "value": "java.dsa.arrays",
+        "type": "string"
+      },
+      {
+        "key": "langSlug",
+        "value": "python",
+        "type": "string"
+      }
+    ],
+    "item": [
+      {
+        "name": "🚀  Bulk Create Topic",
+        "description": "POST /v1/admin/bulk/topic\n\nOne call does everything:\n✅ Auto-creates section if missing\n✅ Saves topic + all blocks\n✅ Extracts quizzes → quiz_questions table\n✅ Extracts mermaid diagrams → diagrams table\n✅ Flushes topic + nav + language cache\n\nNo separate section create or cache flush needed.",
+        "item": [
+          {
+            "name": "Insert DSA Arrays Topic — Full (All Block Types)",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-Admin-Key",
+                  "value": "{{adminKey}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/v1/admin/bulk/topic",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "v1",
+                  "admin",
+                  "bulk",
+                  "topic"
+                ],
+                "query": []
+              },
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"path\": \"java.dsa.arrays\",\n  \"title\": \"Arrays in DSA\",\n  \"section\": \"dsa\",\n  \"sectionTitle\": \"Data Structures & Algorithms\",\n  \"sectionOrder\": 4,\n  \"difficulty\": \"beginner\",\n  \"estimatedMins\": 15,\n  \"tags\": [\n    \"java\",\n    \"dsa\",\n    \"arrays\",\n    \"sorting\",\n    \"searching\"\n  ],\n  \"isDeepDive\": false,\n  \"isPublished\": true,\n  \"sortOrder\": 1,\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"data\": {\n        \"content\": \"An array is the most fundamental data structure — a fixed-size, contiguous block of memory holding elements of a single type. In Java, arrays are objects that live on the heap. Understanding array internals, common algorithms, and time complexity is the foundation of all DSA study.\"\n      }\n    },\n    {\n      \"type\": \"concept_cards\",\n      \"data\": {\n        \"items\": [\n          {\n            \"icon\": \"📏\",\n            \"title\": \"Fixed Size\",\n            \"desc\": \"Size is declared at creation and cannot change. new int[5] allocates exactly 5 elements. Use ArrayList for dynamic sizing.\"\n          },\n          {\n            \"icon\": \"0️⃣\",\n            \"title\": \"Zero-based Index\",\n            \"desc\": \"First element is [0], last is [length-1]. Accessing out of bounds throws ArrayIndexOutOfBoundsException at runtime.\"\n          },\n          {\n            \"icon\": \"⚡\",\n            \"title\": \"O(1) Access\",\n            \"desc\": \"Random access by index is O(1) — elements are contiguous in memory. Address = base + (index x element_size).\"\n          },\n          {\n            \"icon\": \"🔄\",\n            \"title\": \"O(n) Insert/Delete\",\n            \"desc\": \"Inserting or deleting in the middle requires shifting all subsequent elements — O(n) worst case.\"\n          },\n          {\n            \"icon\": \"🔲\",\n            \"title\": \"2D Arrays\",\n            \"desc\": \"int[][] grid = new int[3][4] — array of arrays. Rows can have different lengths (jagged arrays).\"\n          },\n          {\n            \"icon\": \"🛠️\",\n            \"title\": \"Arrays Utility\",\n            \"desc\": \"Arrays.sort() O(n log n). Arrays.binarySearch() O(log n) on sorted. Arrays.fill(), copyOf(), toString().\"\n          }\n        ]\n      }\n    },\n    {\n      \"type\": \"diagram\",\n      \"data\": {\n        \"diagramKey\": \"java_dsa_array_complexity\",\n        \"title\": \"Array Operations — Big-O\",\n        \"diagramType\": \"mermaid\",\n        \"mermaid\": \"graph LR\\n  subgraph Array Operations\\n    A[Access by index] -->|O-1| R1[Fastest]\\n    B[Search unsorted] -->|O-n| R2[Linear scan]\\n    C[Search sorted]   -->|O-logn| R3[Binary search]\\n    D[Insert at end]   -->|O-1| R4[Amortized]\\n    E[Insert middle]   -->|O-n| R5[Must shift]\\n  end\\n  style R1 fill:#166534,color:#fff\\n  style R3 fill:#1d4ed8,color:#fff\\n  style R4 fill:#166534,color:#fff\\n  style R2 fill:#854d0e,color:#fff\\n  style R5 fill:#991b1b,color:#fff\"\n      }\n    },\n    {\n      \"type\": \"code\",\n      \"data\": {\n        \"language\": \"java\",\n        \"filename\": \"ArraysDSA.java\",\n        \"runnable\": true,\n        \"snippet\": \"import java.util.Arrays;\\n\\npublic class ArraysDSA {\\n\\n    static int linearSearch(int[] arr, int target) {\\n        for (int i = 0; i < arr.length; i++)\\n            if (arr[i] == target) return i;\\n        return -1;\\n    }\\n\\n    static int binarySearch(int[] arr, int target) {\\n        int lo = 0, hi = arr.length - 1;\\n        while (lo <= hi) {\\n            int mid = lo + (hi - lo) / 2;\\n            if      (arr[mid] == target) return mid;\\n            else if (arr[mid] <  target) lo = mid + 1;\\n            else                         hi = mid - 1;\\n        }\\n        return -1;\\n    }\\n\\n    static void bubbleSort(int[] arr) {\\n        for (int i = 0; i < arr.length - 1; i++)\\n            for (int j = 0; j < arr.length - 1 - i; j++)\\n                if (arr[j] > arr[j + 1]) {\\n                    int tmp = arr[j]; arr[j] = arr[j+1]; arr[j+1] = tmp;\\n                }\\n    }\\n\\n    public static void main(String[] args) {\\n        int[] nums = {64, 34, 25, 12, 22, 11, 90};\\n        System.out.println(\\\"Unsorted: \\\" + Arrays.toString(nums));\\n        System.out.println(\\\"Linear(25): index \\\" + linearSearch(nums, 25));\\n        bubbleSort(nums);\\n        System.out.println(\\\"Sorted  : \\\" + Arrays.toString(nums));\\n        System.out.println(\\\"Binary(25): index \\\" + binarySearch(nums, 25));\\n        int[] arr2 = {5, 2, 8, 1, 9, 3};\\n        Arrays.sort(arr2);\\n        System.out.println(\\\"Arrays.sort: \\\" + Arrays.toString(arr2));\\n        System.out.println(\\\"binarySearch(8): \\\" + Arrays.binarySearch(arr2, 8));\\n    }\\n}\",\n        \"expectedOutput\": \"Unsorted: [64, 34, 25, 12, 22, 11, 90]\\nLinear(25): index 2\\nSorted  : [11, 12, 22, 25, 34, 64, 90]\\nBinary(25): index 3\\nArrays.sort: [1, 2, 3, 5, 8, 9]\\nbinarySearch(8): 4\"\n      }\n    },\n    {\n      \"type\": \"note\",\n      \"data\": {\n        \"content\": \"**Binary search only works on sorted arrays.** Always sort first. Use lo + (hi - lo) / 2 instead of (lo + hi) / 2 to avoid integer overflow when lo and hi are large.\"\n      }\n    },\n    {\n      \"type\": \"warning\",\n      \"data\": {\n        \"content\": \"Arrays.sort() on primitives uses Dual-Pivot Quicksort — O(n^2) worst case. Arrays.sort() on Object arrays uses TimSort — O(n log n) guaranteed and stable.\"\n      }\n    },\n    {\n      \"type\": \"quiz\",\n      \"data\": {\n        \"questionId\": \"q_java_dsa_arr_001\",\n        \"questionText\": \"What is the time complexity of accessing an element by index in a Java array?\",\n        \"questionType\": \"mcq\",\n        \"options\": [\n          {\n            \"id\": \"a\",\n            \"text\": \"O(n)\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"b\",\n            \"text\": \"O(log n)\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"c\",\n            \"text\": \"O(1)\",\n            \"correct\": true\n          },\n          {\n            \"id\": \"d\",\n            \"text\": \"O(n^2)\",\n            \"correct\": false\n          }\n        ],\n        \"explanation\": \"Array elements are contiguous in memory. Address = base + (index x element_size). Constant time regardless of array size.\"\n      }\n    },\n    {\n      \"type\": \"quiz\",\n      \"data\": {\n        \"questionId\": \"q_java_dsa_arr_002\",\n        \"questionText\": \"What exception is thrown when you access arr[arr.length] in Java?\",\n        \"questionType\": \"mcq\",\n        \"options\": [\n          {\n            \"id\": \"a\",\n            \"text\": \"NullPointerException\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"b\",\n            \"text\": \"ArrayIndexOutOfBoundsException\",\n            \"correct\": true\n          },\n          {\n            \"id\": \"c\",\n            \"text\": \"IndexOutOfBoundsException\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"d\",\n            \"text\": \"IllegalArgumentException\",\n            \"correct\": false\n          }\n        ],\n        \"explanation\": \"Valid indices are 0 to arr.length-1. arr[arr.length] is one past the end — Java throws ArrayIndexOutOfBoundsException.\"\n      }\n    },\n    {\n      \"type\": \"quiz\",\n      \"data\": {\n        \"questionId\": \"q_java_dsa_arr_003\",\n        \"questionText\": \"What is the prerequisite for binary search to work correctly?\",\n        \"questionType\": \"mcq\",\n        \"options\": [\n          {\n            \"id\": \"a\",\n            \"text\": \"Array must contain only integers\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"b\",\n            \"text\": \"Array must be sorted\",\n            \"correct\": true\n          },\n          {\n            \"id\": \"c\",\n            \"text\": \"Array length must be a power of 2\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"d\",\n            \"text\": \"Array must have no duplicate values\",\n            \"correct\": false\n          }\n        ],\n        \"explanation\": \"Binary search halves the search space by comparing to the middle element. Only works if sorted — on an unsorted array it can miss elements entirely.\"\n      }\n    }\n  ]\n}",
+                "options": {
+                  "raw": {
+                    "language": "json"
+                  }
+                }
+              },
+              "description": "Complete Java DSA Arrays topic with ALL block types:\n\n• text — intro paragraph\n• concept_cards — 6 key concepts\n• diagram — mermaid Big-O chart (stored in diagrams table automatically)\n• code — runnable playground with expected output\n• note — tip callout\n• warning — caveat callout\n• quiz x3 — extracted into quiz_questions table automatically\n\nThe 'dsa' section is created automatically under Java if it doesn't exist.\nCache is flushed automatically — no extra calls needed.\n\nExpected response:\n{\n  \"ok\": true,\n  \"path\": \"java.dsa.arrays\",\n  \"id\": \"uuid...\",\n  \"blocks\": 9,\n  \"sectionCreated\": \"dsa\",\n  \"cacheFlushes\": [\"topic:java.dsa.arrays\", \"nav:java\", \"lang:all\"]\n}"
+            },
+            "response": []
+          },
+          {
+            "name": "Insert Deep Dive Child — 2D Arrays",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-Admin-Key",
+                  "value": "{{adminKey}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/v1/admin/bulk/topic",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "v1",
+                  "admin",
+                  "bulk",
+                  "topic"
+                ],
+                "query": []
+              },
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"path\": \"java.dsa.arrays.multidimensional\",\n  \"title\": \"Multidimensional & Jagged Arrays\",\n  \"section\": \"dsa\",\n  \"sectionTitle\": \"Data Structures & Algorithms\",\n  \"difficulty\": \"intermediate\",\n  \"estimatedMins\": 10,\n  \"tags\": [\n    \"java\",\n    \"dsa\",\n    \"2d-array\",\n    \"jagged\",\n    \"matrix\"\n  ],\n  \"isDeepDive\": true,\n  \"isPublished\": true,\n  \"sortOrder\": 1,\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"data\": {\n        \"content\": \"Java supports multidimensional arrays as arrays of arrays. A 2D array int[][] grid is an array where each element is itself an int[]. Rows can have different lengths — jagged arrays — not possible in many other languages.\"\n      }\n    },\n    {\n      \"type\": \"concept_cards\",\n      \"data\": {\n        \"items\": [\n          {\n            \"icon\": \"🔲\",\n            \"title\": \"Regular 2D\",\n            \"desc\": \"int[][] grid = new int[3][4] — 3 rows, 4 columns each. grid[row][col] to access. grid.length = rows, grid[0].length = cols.\"\n          },\n          {\n            \"icon\": \"📐\",\n            \"title\": \"Jagged Array\",\n            \"desc\": \"Omit second dimension: int[][] tri = new int[3][]. Assign each row: tri[0] = new int[1]. Allows rows of different lengths.\"\n          },\n          {\n            \"icon\": \"🧮\",\n            \"title\": \"Matrix Ops\",\n            \"desc\": \"Traversal is O(rows x cols). Matrix multiplication is O(n³). Nested loops: outer for row, inner for column.\"\n          }\n        ]\n      }\n    },\n    {\n      \"type\": \"code\",\n      \"data\": {\n        \"language\": \"java\",\n        \"filename\": \"JaggedArray.java\",\n        \"runnable\": true,\n        \"snippet\": \"public class JaggedArray {\\n    public static void main(String[] args) {\\n        // Regular 2D\\n        int[][] matrix = {{1,2,3},{4,5,6},{7,8,9}};\\n        System.out.println(\\\"[1][2] = \\\" + matrix[1][2]);\\n\\n        // Jagged array\\n        int[][] tri = new int[3][];\\n        for (int i = 0; i < 3; i++) tri[i] = new int[i + 1];\\n        int val = 1;\\n        for (int[] row : tri)\\n            for (int j = 0; j < row.length; j++) row[j] = val++;\\n\\n        System.out.println(\\\"Jagged:\\\");\\n        for (int[] row : tri) {\\n            for (int v : row) System.out.print(v + \\\" \\\");\\n            System.out.println();\\n        }\\n    }\\n}\",\n        \"expectedOutput\": \"[1][2] = 6\\nJagged:\\n1 \\n2 3 \\n4 5 6 \"\n      }\n    },\n    {\n      \"type\": \"quiz\",\n      \"data\": {\n        \"questionId\": \"q_java_dsa_arr_2d_001\",\n        \"questionText\": \"What does int[][] tri = new int[3][] create?\",\n        \"questionType\": \"mcq\",\n        \"options\": [\n          {\n            \"id\": \"a\",\n            \"text\": \"A 3x3 square matrix filled with zeros\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"b\",\n            \"text\": \"A 3-row array where each row length is unset\",\n            \"correct\": true\n          },\n          {\n            \"id\": \"c\",\n            \"text\": \"A compile error — second dimension required\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"d\",\n            \"text\": \"Three null references stored as int values\",\n            \"correct\": false\n          }\n        ],\n        \"explanation\": \"Omitting the second dimension creates a jagged skeleton — 3 null int[] references. You assign each row separately: tri[0] = new int[1]. This allows rows of different lengths.\"\n      }\n    }\n  ]\n}",
+                "options": {
+                  "raw": {
+                    "language": "json"
+                  }
+                }
+              },
+              "description": "Deep dive child of java.dsa.arrays.\n\nPath java.dsa.arrays.multidimensional is depth 3 — automatically flagged as deep dive.\nParent topic java.dsa.arrays must exist before sending this.\n\nSend AFTER the parent topic insert succeeds."
+            },
+            "response": []
+          },
+          {
+            "name": "Insert Minimal Topic (text + quiz only)",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-Admin-Key",
+                  "value": "{{adminKey}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/v1/admin/bulk/topic",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "v1",
+                  "admin",
+                  "bulk",
+                  "topic"
+                ],
+                "query": []
+              },
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"path\": \"java.dsa.linkedlist\",\n  \"title\": \"Linked List\",\n  \"section\": \"dsa\",\n  \"sectionTitle\": \"Data Structures & Algorithms\",\n  \"difficulty\": \"intermediate\",\n  \"estimatedMins\": 12,\n  \"tags\": [\n    \"java\",\n    \"dsa\",\n    \"linkedlist\",\n    \"pointers\"\n  ],\n  \"isPublished\": true,\n  \"sortOrder\": 2,\n  \"blocks\": [\n    {\n      \"type\": \"text\",\n      \"data\": {\n        \"content\": \"A linked list is a linear data structure where elements (nodes) are not stored in contiguous memory. Each node contains data and a pointer to the next node. The last node points to null.\"\n      }\n    },\n    {\n      \"type\": \"concept_cards\",\n      \"data\": {\n        \"items\": [\n          {\n            \"icon\": \"🔗\",\n            \"title\": \"Node\",\n            \"desc\": \"Each node holds data + a next reference. Last node's next is null. No index — must traverse from head.\"\n          },\n          {\n            \"icon\": \"⚡\",\n            \"title\": \"O(1) Insert\",\n            \"desc\": \"Insert at head or after a known node is O(1) — just update pointers. No shifting like arrays.\"\n          },\n          {\n            \"icon\": \"🔍\",\n            \"title\": \"O(n) Search\",\n            \"desc\": \"No random access. Must traverse from head to find an element. O(n) for get by value or index.\"\n          },\n          {\n            \"icon\": \"🔄\",\n            \"title\": \"Types\",\n            \"desc\": \"Singly linked (next only), Doubly linked (next + prev), Circular (tail points back to head).\"\n          }\n        ]\n      }\n    },\n    {\n      \"type\": \"quiz\",\n      \"data\": {\n        \"questionId\": \"q_java_dsa_ll_001\",\n        \"questionText\": \"What is the time complexity of inserting at the head of a singly linked list?\",\n        \"questionType\": \"mcq\",\n        \"options\": [\n          {\n            \"id\": \"a\",\n            \"text\": \"O(n)\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"b\",\n            \"text\": \"O(log n)\",\n            \"correct\": false\n          },\n          {\n            \"id\": \"c\",\n            \"text\": \"O(1)\",\n            \"correct\": true\n          },\n          {\n            \"id\": \"d\",\n            \"text\": \"O(n^2)\",\n            \"correct\": false\n          }\n        ],\n        \"explanation\": \"Inserting at the head only requires creating a new node, pointing it to the current head, and updating the head pointer — constant time regardless of list size.\"\n      }\n    }\n  ]\n}",
+                "options": {
+                  "raw": {
+                    "language": "json"
+                  }
+                }
+              },
+              "description": "Minimal topic example with text, concept_cards, and one quiz.\nGood starting template for new topics.\nSection 'dsa' is auto-created if it doesn't exist."
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "🌐  Bulk Create Language",
+        "description": "POST /v1/admin/bulk/language\n\nOne call does everything:\n✅ Creates / updates language\n✅ Creates all sections\n✅ Auto-creates sections referenced in topics but not listed in sections[]\n✅ Saves all topics sorted by depth (parents before children)\n✅ Extracts all quizzes and diagrams\n✅ Flushes entire language cache\n\nNo other API calls needed.",
+        "item": [
+          {
+            "name": "Insert Python Language — Full (Language + Sections + 2 Topics)",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-Admin-Key",
+                  "value": "{{adminKey}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/v1/admin/bulk/language",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "v1",
+                  "admin",
+                  "bulk",
+                  "language"
+                ],
+                "query": []
+              },
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"language\": {\n    \"slug\": \"python\",\n    \"name\": \"Python\",\n    \"description\": \"Simple, readable, powerful\",\n    \"iconUrl\": \"/icons/python.svg\",\n    \"sortOrder\": 2,\n    \"meta\": {\n      \"color\": \"#3572A5\",\n      \"tagline\": \"Simple, readable, powerful\"\n    }\n  },\n  \"sections\": [\n    {\n      \"slug\": \"core-language\",\n      \"title\": \"Core Language\",\n      \"sortOrder\": 1\n    },\n    {\n      \"slug\": \"advanced\",\n      \"title\": \"Advanced\",\n      \"sortOrder\": 2\n    }\n  ],\n  \"topics\": [\n    {\n      \"path\": \"python.basics\",\n      \"title\": \"Python Basics\",\n      \"section\": \"core-language\",\n      \"difficulty\": \"beginner\",\n      \"estimatedMins\": 8,\n      \"tags\": [\n        \"python\",\n        \"basics\",\n        \"syntax\"\n      ],\n      \"isPublished\": true,\n      \"sortOrder\": 1,\n      \"blocks\": [\n        {\n          \"type\": \"text\",\n          \"data\": {\n            \"content\": \"Python is a high-level, dynamically typed language. Programs run directly via the CPython interpreter — no compilation step needed. Edit a file and run it immediately with python file.py.\"\n          }\n        },\n        {\n          \"type\": \"concept_cards\",\n          \"data\": {\n            \"items\": [\n              {\n                \"icon\": \"🐍\",\n                \"title\": \"Interpreted\",\n                \"desc\": \"Python runs line by line. No .class files. Edit and run immediately.\"\n              },\n              {\n                \"icon\": \"📦\",\n                \"title\": \"pip\",\n                \"desc\": \"Package manager. pip install requests installs a library. Track in requirements.txt.\"\n              },\n              {\n                \"icon\": \"🔤\",\n                \"title\": \"Dynamic Types\",\n                \"desc\": \"No type declarations needed. x = 42 then x = 'hello' is valid. Type errors surface at runtime.\"\n              },\n              {\n                \"icon\": \"🔲\",\n                \"title\": \"Indentation\",\n                \"desc\": \"Indentation defines code blocks — no curly braces. 4 spaces is the standard (PEP 8).\"\n              }\n            ]\n          }\n        },\n        {\n          \"type\": \"code\",\n          \"data\": {\n            \"language\": \"python\",\n            \"filename\": \"hello.py\",\n            \"runnable\": false,\n            \"snippet\": \"# Hello World\\nprint(\\\"Hello, World!\\\")\\n\\nname = \\\"Python\\\"\\nversion = 3.12\\nprint(f\\\"Welcome to {name} {version}\\\")\\n\\n# Dynamic typing\\nx = 42\\nprint(type(x))     # <class 'int'>\\nx = \\\"now a string\\\"\\nprint(type(x))     # <class 'str'>\\n\\n# List, dict, tuple\\nnums = [1, 2, 3, 4, 5]\\ninfo = {\\\"lang\\\": \\\"Python\\\", \\\"year\\\": 1991}\\ncoords = (10, 20)\\nprint(nums, info, coords)\"\n          }\n        },\n        {\n          \"type\": \"quiz\",\n          \"data\": {\n            \"questionId\": \"q_python_basics_001\",\n            \"questionText\": \"Python is which type of language?\",\n            \"questionType\": \"mcq\",\n            \"options\": [\n              {\n                \"id\": \"a\",\n                \"text\": \"Compiled to native machine code\",\n                \"correct\": false\n              },\n              {\n                \"id\": \"b\",\n                \"text\": \"Interpreted and dynamically typed\",\n                \"correct\": true\n              },\n              {\n                \"id\": \"c\",\n                \"text\": \"Statically typed like Java\",\n                \"correct\": false\n              },\n              {\n                \"id\": \"d\",\n                \"text\": \"Compiled to JVM bytecode\",\n                \"correct\": false\n              }\n            ],\n            \"explanation\": \"Python is interpreted (runs via CPython line by line) and dynamically typed (variable types are checked at runtime, not compile time).\"\n          }\n        }\n      ]\n    },\n    {\n      \"path\": \"python.variables\",\n      \"title\": \"Variables & Data Types\",\n      \"section\": \"core-language\",\n      \"difficulty\": \"beginner\",\n      \"estimatedMins\": 10,\n      \"tags\": [\n        \"python\",\n        \"variables\",\n        \"types\",\n        \"casting\"\n      ],\n      \"isPublished\": true,\n      \"sortOrder\": 2,\n      \"blocks\": [\n        {\n          \"type\": \"text\",\n          \"data\": {\n            \"content\": \"Python variables are created on assignment — no declaration needed. Variables are references to objects on the heap. Python has 5 core built-in types: int, float, str, bool, NoneType.\"\n          }\n        },\n        {\n          \"type\": \"concept_cards\",\n          \"data\": {\n            \"items\": [\n              {\n                \"icon\": \"🔢\",\n                \"title\": \"int\",\n                \"desc\": \"Whole numbers. No size limit in Python 3 — integers grow automatically. x = 42, y = -100, z = 10**100.\"\n              },\n              {\n                \"icon\": \"🌊\",\n                \"title\": \"float\",\n                \"desc\": \"Decimal numbers using IEEE 754 double precision. x = 3.14, y = 2.0e10. Be careful with floating point comparison.\"\n              },\n              {\n                \"icon\": \"📝\",\n                \"title\": \"str\",\n                \"desc\": \"Immutable text. Single or double quotes. f-strings for interpolation: f'Hello {name}'. Multi-line with triple quotes.\"\n              },\n              {\n                \"icon\": \"✅\",\n                \"title\": \"bool\",\n                \"desc\": \"True or False — note capitalisation. Falsy values: 0, '', None, [], {}. Everything else is truthy.\"\n              }\n            ]\n          }\n        },\n        {\n          \"type\": \"code\",\n          \"data\": {\n            \"language\": \"python\",\n            \"filename\": \"variables.py\",\n            \"runnable\": false,\n            \"snippet\": \"# Integer\\nx = 42\\nprint(type(x), x)\\n\\n# Float\\npi = 3.14159\\nprint(type(pi), pi)\\n\\n# String\\nname = \\\"Java Mastery\\\"\\nprint(type(name), name.upper())\\n\\n# Bool\\nflag = True\\nprint(type(flag), flag)\\n\\n# None\\nvalue = None\\nprint(type(value), value)\\n\\n# Type casting\\nnum_str = \\\"123\\\"\\nnum_int = int(num_str)\\nprint(num_int + 1)  # 124\\n\\n# Multiple assignment\\na, b, c = 1, 2, 3\\nprint(a, b, c)\"\n          }\n        },\n        {\n          \"type\": \"quiz\",\n          \"data\": {\n            \"questionId\": \"q_python_vars_001\",\n            \"questionText\": \"What is the output of: x = 5; x = 'hello'; print(type(x))?\",\n            \"questionType\": \"mcq\",\n            \"options\": [\n              {\n                \"id\": \"a\",\n                \"text\": \"<class 'int'>\",\n                \"correct\": false\n              },\n              {\n                \"id\": \"b\",\n                \"text\": \"<class 'str'>\",\n                \"correct\": true\n              },\n              {\n                \"id\": \"c\",\n                \"text\": \"TypeError\",\n                \"correct\": false\n              },\n              {\n                \"id\": \"d\",\n                \"text\": \"<class 'undefined'>\",\n                \"correct\": false\n              }\n            ],\n            \"explanation\": \"Python is dynamically typed — a variable can be reassigned to any type. After x = 'hello', x holds a string reference. type(x) returns <class 'str'>.\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+                "options": {
+                  "raw": {
+                    "language": "json"
+                  }
+                }
+              },
+              "description": "Inserts a complete Python language in one call:\n\n• Language: python, color #3572A5\n• Sections: core-language, advanced\n• Topics:\n  - python.basics (text, concept_cards, code, quiz)\n  - python.variables (text, concept_cards, code, quiz)\n\nAll quizzes extracted to quiz_questions table.\nFull cache flushed at the end.\n\nExpected response:\n{\n  \"ok\": true,\n  \"language\": { \"slug\": \"python\", \"id\": \"uuid...\" },\n  \"sectionsCreated\": [\"core-language\", \"advanced\"],\n  \"topics\": [\"python.basics\", \"python.variables\"],\n  \"errors\": [],\n  \"cacheFlushes\": [\"all-topics\", \"nav:python\", \"lang:all\"]\n}"
+            },
+            "response": []
+          },
+          {
+            "name": "Insert Language + Sections Only (No Topics Yet)",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-Admin-Key",
+                  "value": "{{adminKey}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/v1/admin/bulk/language",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "v1",
+                  "admin",
+                  "bulk",
+                  "language"
+                ],
+                "query": []
+              },
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"language\": {\n    \"slug\": \"typescript\",\n    \"name\": \"TypeScript\",\n    \"description\": \"JavaScript with static types\",\n    \"iconUrl\": \"/icons/typescript.svg\",\n    \"sortOrder\": 3,\n    \"meta\": {\n      \"color\": \"#3178C6\",\n      \"tagline\": \"JavaScript that scales\"\n    }\n  },\n  \"sections\": [\n    {\n      \"slug\": \"basics\",\n      \"title\": \"TypeScript Basics\",\n      \"sortOrder\": 1\n    },\n    {\n      \"slug\": \"advanced-types\",\n      \"title\": \"Advanced Types\",\n      \"sortOrder\": 2\n    },\n    {\n      \"slug\": \"tooling\",\n      \"title\": \"Tooling & Config\",\n      \"sortOrder\": 3\n    }\n  ],\n  \"topics\": []\n}",
+                "options": {
+                  "raw": {
+                    "language": "json"
+                  }
+                }
+              },
+              "description": "Creates just the language and its sections without topics.\nTopics can be added later via POST /v1/admin/bulk/topic.\n\nUseful when you want to set up structure first and fill topics gradually."
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "🗑️  Delete Topic",
+        "description": "DELETE /v1/admin/delete/topic/:path?mode=soft|hard|cascade\n\nThree modes:\n• soft    → hides topic (is_published=false). Reversible.\n• hard    → permanently deletes topic + blocks. Children kept.\n• cascade → permanently deletes topic + ALL children at any depth.\n\nDefault mode is soft — safe to call without ?mode param.\nCache is flushed automatically in all modes.",
+        "item": [
+          {
+            "name": "Soft Delete Topic (Unpublish)",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-Admin-Key",
+                  "value": "{{adminKey}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/v1/admin/delete/topic/{{topicPath}}?mode=soft",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "v1",
+                  "admin",
+                  "delete",
+                  "topic",
+                  "{{topicPath}}"
+                ],
+                "query": [
+                  {
+                    "key": "mode",
+                    "value": "soft",
+                    "description": "soft = hide from learners, reversible"
+                  }
+                ]
+              },
+              "description": "Sets is_published = false.\nTopic disappears from learner app immediately.\nData is preserved — restore anytime with:\n  PATCH /v1/admin/topics/{{topicPath}}\n  Body: { \"isPublished\": true }\n\nCache flushed automatically.\n\nExpected response:\n{\n  \"ok\": true,\n  \"mode\": \"soft\",\n  \"unpublished\": \"java.dsa.arrays\",\n  \"note\": \"Restore with PATCH { isPublished: true }\"\n}"
+            },
+            "response": []
+          },
+          {
+            "name": "Hard Delete Topic (Permanent — No Children)",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-Admin-Key",
+                  "value": "{{adminKey}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/v1/admin/delete/topic/{{topicPath}}?mode=hard",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "v1",
+                  "admin",
+                  "delete",
+                  "topic",
+                  "{{topicPath}}"
+                ],
+                "query": [
+                  {
+                    "key": "mode",
+                    "value": "hard",
+                    "description": "hard = permanent delete of this topic only"
+                  }
+                ]
+              },
+              "description": "Permanently deletes the topic row and all its blocks.\nChildren (deep dive sub-topics) are NOT deleted — they become orphans.\n\n⚠️ This cannot be undone.\n\nUse 'cascade' mode instead if you also want children deleted.\n\nExpected response:\n{\n  \"ok\": true,\n  \"mode\": \"hard\",\n  \"deleted\": \"java.dsa.arrays\",\n  \"note\": \"Topic and its blocks permanently deleted. Children are NOT deleted.\"\n}"
+            },
+            "response": []
+          },
+          {
+            "name": "Cascade Delete Topic (Permanent — Topic + ALL Children)",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-Admin-Key",
+                  "value": "{{adminKey}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/v1/admin/delete/topic/{{topicPath}}?mode=cascade",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "v1",
+                  "admin",
+                  "delete",
+                  "topic",
+                  "{{topicPath}}"
+                ],
+                "query": [
+                  {
+                    "key": "mode",
+                    "value": "cascade",
+                    "description": "cascade = permanent delete of topic + all children at any depth"
+                  }
+                ]
+              },
+              "description": "Permanently deletes the topic AND every child at any depth.\n\nExample: deleting java.dsa.arrays with cascade also deletes:\n  java.dsa.arrays.multidimensional\n  java.dsa.arrays.sorting\n  java.dsa.arrays.searching\n  ... and any deeper children\n\n⚠️ This cannot be undone.\n\nExpected response:\n{\n  \"ok\": true,\n  \"mode\": \"cascade\",\n  \"deleted\": [\"java.dsa.arrays\", \"java.dsa.arrays.multidimensional\"],\n  \"count\": 2,\n  \"note\": \"2 topic(s) and all their blocks permanently deleted.\"\n}"
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "🌐🗑️  Delete Language",
+        "description": "DELETE /v1/admin/delete/language/:slug?mode=soft|hard\n\nTwo modes:\n• soft → sets is_active=false. Hidden from all APIs. Reversible.\n• hard → permanently deletes language + ALL sections + ALL topics + ALL blocks.\n\nDefault mode is soft.\nCache is flushed automatically in both modes.",
+        "item": [
+          {
+            "name": "Soft Delete Language (Deactivate)",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-Admin-Key",
+                  "value": "{{adminKey}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/v1/admin/delete/language/{{langSlug}}?mode=soft",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "v1",
+                  "admin",
+                  "delete",
+                  "language",
+                  "{{langSlug}}"
+                ],
+                "query": [
+                  {
+                    "key": "mode",
+                    "value": "soft",
+                    "description": "soft = hide language, reversible"
+                  }
+                ]
+              },
+              "description": "Sets is_active = false.\nLanguage disappears from the learner app language selector.\nAll topics and sections are preserved.\n\nRestore with:\n  PUT /v1/admin/languages/{{langSlug}}\n  Body: { \"isActive\": true }\n\nCache flushed automatically.\n\nExpected response:\n{\n  \"ok\": true,\n  \"mode\": \"soft\",\n  \"deactivated\": \"python\",\n  \"name\": \"Python\",\n  \"note\": \"Restore with PUT /admin/languages/:slug { isActive: true }\"\n}"
+            },
+            "response": []
+          },
+          {
+            "name": "Hard Delete Language (FULL WIPE — Irreversible)",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-Admin-Key",
+                  "value": "{{adminKey}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/v1/admin/delete/language/{{langSlug}}?mode=hard",
+                "host": [
+                  "{{baseUrl}}"
+                ],
+                "path": [
+                  "v1",
+                  "admin",
+                  "delete",
+                  "language",
+                  "{{langSlug}}"
+                ],
+                "query": [
+                  {
+                    "key": "mode",
+                    "value": "hard",
+                    "description": "hard = permanent wipe of entire language"
+                  }
+                ]
+              },
+              "description": "⚠️ PERMANENT FULL WIPE — CANNOT BE UNDONE\n\nDeletes everything for this language:\n  • Language row\n  • All sections\n  • All topics\n  • All topic blocks\n\nThe database FK cascade handles cleanup automatically.\n\nExpected response:\n{\n  \"ok\": true,\n  \"mode\": \"hard\",\n  \"deleted\": \"python\",\n  \"name\": \"Python\",\n  \"summary\": {\n    \"sectionsDeleted\": 2,\n    \"topicsDeleted\": 5,\n    \"blocksDeleted\": 38\n  },\n  \"note\": \"Language, all sections, all topics, and all blocks permanently deleted.\"\n}"
+            },
+            "response": []
+          }
+        ]
+      }
+    ]
+  }

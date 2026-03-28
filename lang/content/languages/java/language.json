@@ -1,0 +1,20 @@
+{
+  "slug": "java",
+  "name": "Java",
+  "icon_url": "/icons/java.svg",
+  "description": "A high-performance, class-based, object-oriented language designed for portability across platforms.",
+  "sort_order": 1,
+  "meta": {
+    "color": "#007396",
+    "tagline": "Write once, run anywhere",
+    "difficulty": "intermediate",
+    "version": "21 LTS"
+  },
+  "sections": [
+    { "slug": "core-language",  "title": "Core Language",   "sort_order": 1 },
+    { "slug": "jvm-internals",  "title": "JVM Internals",   "sort_order": 2 },
+    { "slug": "oop",            "title": "Object-Oriented", "sort_order": 3 },
+    { "slug": "advanced",       "title": "Advanced Java",   "sort_order": 4 },
+    { "slug": "projects",       "title": "Projects",        "sort_order": 5 }
+  ]
+}
