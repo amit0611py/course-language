@@ -9,4 +9,5 @@ module.exports = async (fastify, opts) => {
   fastify.register(require('./topics'),     { prefix: '/topics'     });
   fastify.register(require('./projects'),   { prefix: '/projects'   });
   fastify.register(require('./quiz'),       { prefix: '/quiz'       });
+  fastify.register(require('./paid'),       { prefix: '/paid'       });
 };

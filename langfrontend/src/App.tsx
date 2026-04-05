@@ -7,6 +7,8 @@ import GlobalStyles from "./components/GlobalStyles";
 import Sidebar from "./components/Sidebar";
 import HomePage from "./components/HomePage";
 import TopicPage from "./components/TopicPage";
+import PremiumModal from "./components/PremiumModal";
+import { PremiumProvider, usePremium } from "./context/PremiumContext";
 import type { Language } from "./types";
 
 // ─────────────────────────────────────────────────────────────
@@ -142,6 +144,8 @@ interface LanguageShellProps {
 function LanguageShell({ languages, sidebarOpen, setSidebarOpen }: LanguageShellProps) {
   const { lang = "java", "*": topicPath = "" } = useParams<{ lang: string; "*": string }>();
   const navigate = useNavigate();
+  const { isPremium } = usePremium();
+  const [modalOpen, setModalOpen] = useState(false);
 
   // Safety guard — languages must be an array before calling .find()
   const safeLanguages = Array.isArray(languages) ? languages : [];
@@ -204,6 +208,27 @@ function LanguageShell({ languages, sidebarOpen, setSidebarOpen }: LanguageShell
             <span style={{ color: C.dim, fontSize: 12 }}>Search topics…</span>
           </div>
 
+          {/* Premium status button */}
+          <button
+            onClick={() => setModalOpen(true)}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "5px 12px", borderRadius: 9,
+              background: isPremium
+                ? "rgba(124,58,237,.15)"
+                : C.card,
+              border: isPremium
+                ? "1px solid rgba(124,58,237,.4)"
+                : `1px solid ${C.border}`,
+              color: isPremium ? "#a78bfa" : C.muted,
+              fontSize: 12, fontWeight: 700, cursor: "pointer",
+              transition: "all .2s",
+            }}
+          >
+            <span>{isPremium ? "⭐" : "🔒"}</span>
+            <span>{isPremium ? "Premium" : "Upgrade"}</span>
+          </button>
+
           <LanguageSelector languages={safeLanguages} currentSlug={lang} />
         </div>
       </div>
@@ -236,6 +261,9 @@ function LanguageShell({ languages, sidebarOpen, setSidebarOpen }: LanguageShell
           </Routes>
         </div>
       </div>
+
+      {/* Premium modal — on-load popup + manual trigger */}
+      <PremiumModal onClose={() => setModalOpen(false)} forceOpen={modalOpen} />
     </div>
   );
 }
@@ -305,8 +333,6 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { data: rawLanguages, isLoading, isError, error } = useLanguages();
 
-  // Hard guard: the normalizer in client.ts should already return an array,
-  // but protect against any edge case where the shape is still wrong.
   const languages: Language[] = Array.isArray(rawLanguages) ? rawLanguages : [];
 
   if (isLoading) return <><GlobalStyles /><LoadingScreen /></>;
@@ -318,50 +344,46 @@ export default function App() {
   const defaultLang = languages[0].slug;
 
   return (
-    <div
-      style={{
-        // Full-screen dark background
-        minHeight: "100vh",
-        background: C.bg,
-        color: C.text,
-        fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",
-      }}
-    >
-      <GlobalStyles />
-
-      {/* Centred layout container — max-width 1400px */}
+    <PremiumProvider>
       <div
         style={{
-          maxWidth: 1400,
-          margin: "0 auto",
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          // Subtle side borders on very large monitors
-          borderLeft: `1px solid ${C.border}`,
-          borderRight: `1px solid ${C.border}`,
+          minHeight: "100vh",
+          background: C.bg,
+          color: C.text,
+          fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",
         }}
       >
-        <Routes>
-          {/* Redirect root → first language */}
-          <Route path="/" element={<Navigate to={`/${defaultLang}`} replace />} />
+        <GlobalStyles />
 
-          {/* Language shell handles all /:lang/* routes */}
-          <Route
-            path="/:lang/*"
-            element={
-              <LanguageShell
-                languages={languages}
-                sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}
-              />
-            }
-          />
+        <div
+          style={{
+            maxWidth: 1400,
+            margin: "0 auto",
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            borderLeft: `1px solid ${C.border}`,
+            borderRight: `1px solid ${C.border}`,
+          }}
+        >
+          <Routes>
+            <Route path="/" element={<Navigate to={`/${defaultLang}`} replace />} />
 
-          {/* Catch-all */}
-          <Route path="*" element={<Navigate to={`/${defaultLang}`} replace />} />
-        </Routes>
+            <Route
+              path="/:lang/*"
+              element={
+                <LanguageShell
+                  languages={languages}
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                />
+              }
+            />
+
+            <Route path="*" element={<Navigate to={`/${defaultLang}`} replace />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </PremiumProvider>
   );
 }

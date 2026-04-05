@@ -2,11 +2,18 @@
 
 const findByLanguage = async (db, languageId) => {
   const { rows } = await db.query(`
-    SELECT id, slug, title, description, difficulty, estimated_hours, sort_order
-    FROM   projects
-    WHERE  language_id  = $1
-      AND  is_published = true
-    ORDER  BY sort_order ASC, title ASC
+    SELECT
+      p.id, p.slug, p.title, p.description, p.difficulty,
+      p.estimated_hours, p.sort_order, p.content_tier,
+      -- Flag: does a premium architecture doc exist for this project?
+      EXISTS (
+        SELECT 1 FROM project_architecture pa
+        WHERE pa.project_id = p.id AND pa.is_published = true
+      ) AS has_architecture
+    FROM   projects p
+    WHERE  p.language_id  = $1
+      AND  p.is_published = true
+    ORDER  BY p.sort_order ASC, p.title ASC
   `, [languageId]);
   return rows;
 };
@@ -18,8 +25,12 @@ const findBySlugWithTech = async (db, slug) => {
   const { rows: pRows } = await db.query(`
     SELECT
       p.id, p.slug, p.title, p.description, p.difficulty,
-      p.estimated_hours, p.blocks, p.meta,
-      l.slug AS language_slug
+      p.estimated_hours, p.blocks, p.meta, p.content_tier,
+      l.slug AS language_slug,
+      EXISTS (
+        SELECT 1 FROM project_architecture pa
+        WHERE pa.project_id = p.id AND pa.is_published = true
+      ) AS has_architecture
     FROM   projects p
     JOIN   languages l ON l.id = p.language_id
     WHERE  p.slug         = $1

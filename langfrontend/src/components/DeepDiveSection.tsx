@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { C, colorRgb } from "../theme";
 import type { NavTopic } from "../types";
 
 // ─────────────────────────────────────────────────────────────
 // DEEP DIVE SECTION
-// Renders a collapsible panel containing deep-dive child topics.
-// Only shown when topic.children includes topics with isDeepDive=true.
+// Collapsible panel listing all deep-dive child topics for the
+// current topic. Matches the visual style of TopicPage /
+// Sidebar / HomePage (dark glass cards, accent colours).
 //
-// UX flow:
-//   Collapsed → Banner with count + "Explore ↓" button
-//   Expanded  → Grid of topic cards, each clickable to navigate
+// Props:
+//   topics      — NavTopic[] where isDeepDive === true
+//   accentColor — hex colour inherited from the parent topic
+//   lang        — language slug used to build navigation paths
 // ─────────────────────────────────────────────────────────────
 
 interface DeepDiveSectionProps {
@@ -20,190 +21,241 @@ interface DeepDiveSectionProps {
   lang: string;
 }
 
-// ── Individual deep-dive topic card ───────────────────────────
-interface TopicCardProps {
-  topic: NavTopic;
-  accentColor: string;
-  rgb: string;
-  onClick: () => void;
-}
-
-function DeepDiveCard({ topic, accentColor, rgb, onClick }: TopicCardProps) {
-  const childCount = topic.children?.length ?? 0;
-
-  return (
-    <div
-      className="card-hover"
-      onClick={onClick}
-      style={{
-        flex: "1 1 220px",
-        minWidth: 0,
-        background: `rgba(${rgb},.06)`,
-        border: `1px solid rgba(${rgb},.2)`,
-        borderRadius: 14,
-        padding: "16px 18px",
-        cursor: "pointer",
-        transition: "all .18s",
-        display: "flex",
-        flexDirection: "column",
-        gap: 6,
-      }}
-    >
-      {/* Top row: DEEP DIVE badge + time */}
-      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <span
-          style={{
-            fontSize: 9, fontWeight: 800, letterSpacing: 0.6,
-            color: accentColor,
-            background: `rgba(${rgb},.2)`,
-            padding: "2px 7px", borderRadius: 5,
-          }}
-        >
-          DEEP DIVE
-        </span>
-        {topic.estimatedMins && (
-          <span style={{ color: C.dim, fontSize: 10 }}>
-            ⏱ {topic.estimatedMins} min
-          </span>
-        )}
-      </div>
-
-      {/* Topic title */}
-      <div
-        style={{
-          color: C.text, fontWeight: 700, fontSize: 14,
-          lineHeight: 1.45, flex: 1,
-        }}
-      >
-        {topic.title}
-      </div>
-
-      {/* Sub-topic count */}
-      {childCount > 0 && (
-        <div style={{ color: C.dim, fontSize: 11 }}>
-          + {childCount} sub-topic{childCount > 1 ? "s" : ""}
-        </div>
-      )}
-
-      {/* CTA */}
-      <div
-        style={{
-          color: accentColor, fontSize: 12, fontWeight: 700,
-          marginTop: 4,
-          display: "flex", alignItems: "center", gap: 4,
-        }}
-      >
-        Explore →
-      </div>
-    </div>
-  );
-}
-
-// ── Deep Dive Section wrapper ─────────────────────────────────
-export default function DeepDiveSection({ topics, accentColor, lang }: DeepDiveSectionProps) {
+export default function DeepDiveSection({
+  topics,
+  accentColor,
+  lang,
+}: DeepDiveSectionProps) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const rgb = colorRgb(accentColor);
 
-  if (!topics.length) return null;
+  if (topics.length === 0) return null;
 
   return (
     <div
       className="fu"
-      style={{
-        marginTop: 32,
-        marginBottom: 8,
-        border: `1px solid rgba(${rgb},.25)`,
-        borderRadius: 16,
-        overflow: "hidden",
-        animationDelay: ".18s",
-      }}
+      style={{ animationDelay: ".16s", marginTop: 32 }}
     >
-      {/* ── Toggle header ── */}
+      {/* ── Section header / toggle ─────────────────────────── */}
       <button
         onClick={() => setOpen((v) => !v)}
         style={{
           width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "16px 20px",
           background: open
             ? `rgba(${rgb},.08)`
             : `rgba(${rgb},.04)`,
-          borderBottom: open ? `1px solid rgba(${rgb},.2)` : "none",
+          border: `1px solid rgba(${rgb},.2)`,
+          borderRadius: open ? "14px 14px 0 0" : 14,
+          padding: "14px 18px",
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
           cursor: "pointer",
-          transition: "background .2s",
+          transition: "all .18s",
           textAlign: "left",
         }}
       >
-        {/* Left: icon + label */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
-            style={{
-              width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-              background: `rgba(${rgb},.15)`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 18,
-            }}
-          >
-            🔬
-          </div>
-          <div>
-            <div
-              style={{
-                color: accentColor, fontWeight: 800, fontSize: 14,
-                letterSpacing: 0.1,
-              }}
-            >
-              Deep Dive
-            </div>
-            <div style={{ color: C.dim, fontSize: 11, marginTop: 2 }}>
-              {topics.length} advanced topic{topics.length > 1 ? "s" : ""}
-              {" · "}Explore when you're ready
-            </div>
-          </div>
-        </div>
-
-        {/* Right: expand/collapse pill */}
+        {/* Icon */}
         <div
           style={{
-            display: "flex", alignItems: "center", gap: 5,
-            color: accentColor,
-            background: `rgba(${rgb},.12)`,
-            borderRadius: 8, padding: "5px 12px",
-            fontSize: 11, fontWeight: 700,
+            width: 34,
+            height: 34,
+            borderRadius: 10,
+            background: `rgba(${rgb},.15)`,
+            border: `1px solid rgba(${rgb},.25)`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 16,
             flexShrink: 0,
           }}
         >
-          {open ? (
-            <><ChevronUp size={13} /> Collapse</>
-          ) : (
-            <><ChevronDown size={13} /> Explore</>
-          )}
+          🔬
+        </div>
+
+        {/* Label */}
+        <div style={{ flex: 1 }}>
+          <div
+            style={{
+              color: C.text,
+              fontWeight: 700,
+              fontSize: 14,
+              letterSpacing: -0.2,
+            }}
+          >
+            Deep Dive
+          </div>
+          <div style={{ color: C.dim, fontSize: 11, marginTop: 2 }}>
+            {topics.length} advanced topic{topics.length !== 1 ? "s" : ""} — go deeper
+          </div>
+        </div>
+
+        {/* Count pill + chevron */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span
+            style={{
+              background: `rgba(${rgb},.15)`,
+              color: accentColor,
+              fontSize: 11,
+              fontWeight: 700,
+              padding: "3px 10px",
+              borderRadius: 20,
+              border: `1px solid rgba(${rgb},.25)`,
+            }}
+          >
+            {topics.length}
+          </span>
+          <span
+            style={{
+              color: C.muted,
+              fontSize: 16,
+              transform: open ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform .2s",
+              display: "inline-block",
+            }}
+          >
+            ▾
+          </span>
         </div>
       </button>
 
-      {/* ── Expanded: topic cards ── */}
+      {/* ── Collapsible topic list ───────────────────────────── */}
       {open && (
         <div
           style={{
-            padding: "20px",
-            display: "flex", gap: 14, flexWrap: "wrap",
-            background: `rgba(${rgb},.025)`,
+            border: `1px solid rgba(${rgb},.2)`,
+            borderTop: "none",
+            borderRadius: "0 0 14px 14px",
+            overflow: "hidden",
           }}
         >
-          {topics.map((t) => (
-            <DeepDiveCard
-              key={t.path}
-              topic={t}
+          {topics.map((topic, idx) => (
+            <DeepDiveRow
+              key={topic.path}
+              topic={topic}
               accentColor={accentColor}
               rgb={rgb}
-              onClick={() => navigate(`/${lang}/t/${t.path}`)}
+              isLast={idx === topics.length - 1}
+              onClick={() => navigate(`/${lang}/t/${topic.path}`)}
             />
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Individual deep-dive topic row ────────────────────────────
+
+interface DeepDiveRowProps {
+  topic: NavTopic;
+  accentColor: string;
+  rgb: string;
+  isLast: boolean;
+  onClick: () => void;
+}
+
+function DeepDiveRow({
+  topic,
+  accentColor,
+  rgb,
+  isLast,
+  onClick,
+}: DeepDiveRowProps) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+        padding: "13px 18px",
+        cursor: "pointer",
+        background: hovered ? `rgba(${rgb},.06)` : "transparent",
+        borderBottom: isLast ? "none" : `1px solid rgba(${rgb},.1)`,
+        transition: "background .15s",
+      }}
+    >
+      {/* Microscope dot accent */}
+      <div
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: "50%",
+          background: `rgba(${rgb},.4)`,
+          border: `2px solid rgba(${rgb},.6)`,
+          flexShrink: 0,
+        }}
+      />
+
+      {/* Title + meta */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            color: hovered ? accentColor : C.text,
+            fontWeight: 600,
+            fontSize: 13,
+            transition: "color .15s",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {topic.title}
+        </div>
+
+        {/* Optional meta row */}
+        {(topic.estimatedMins || topic.isPremium) && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              marginTop: 3,
+            }}
+          >
+            {topic.estimatedMins && (
+              <span style={{ color: C.dim, fontSize: 10 }}>
+                ⏱ {topic.estimatedMins} min
+              </span>
+            )}
+            {topic.isPremium && (
+              <span
+                style={{
+                  fontSize: 9,
+                  fontWeight: 800,
+                  color: "#a78bfa",
+                  background: "rgba(124,58,237,.12)",
+                  border: "1px solid rgba(124,58,237,.25)",
+                  padding: "1px 6px",
+                  borderRadius: 8,
+                }}
+              >
+                🔒 PRO
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Arrow */}
+      <span
+        style={{
+          color: hovered ? accentColor : C.dim,
+          fontSize: 13,
+          fontWeight: 700,
+          transition: "color .15s, transform .15s",
+          transform: hovered ? "translateX(3px)" : "none",
+          flexShrink: 0,
+        }}
+      >
+        →
+      </span>
     </div>
   );
 }

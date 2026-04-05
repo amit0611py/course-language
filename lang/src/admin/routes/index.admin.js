@@ -1,9 +1,8 @@
 'use strict';
 
 // Central admin route loader
-// All routes are mounted under /v1/admin (registered in src/routes/index.js)
-// Every sub-module applies fastify.verifyAdminKey as a preHandler individually
-// so the auth check is explicit and can't be accidentally skipped.
+// All routes are mounted under /v1/admin
+// Every sub-module applies fastify.verifyAdminKey as a preHandler individually.
 
 module.exports = async (fastify) => {
   fastify.register(require('./languages.admin'), { prefix: '/languages' });
@@ -14,4 +13,5 @@ module.exports = async (fastify) => {
   fastify.register(require('./stats.admin'),     { prefix: '/stats'     });
   fastify.register(require('./bulk.admin'),      { prefix: '/bulk'      });
   fastify.register(require('./delete.admin'),    { prefix: '/delete'    });
+  fastify.register(require('./paid.admin'),      { prefix: '/paid'      });
 };

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Home, ChevronRight, ChevronDown, Coffee, Layers, Zap, GitBranch, Package, Terminal, Globe } from "lucide-react";
 import { C, colorRgb, DEFAULT_COLOR } from "../theme";
 import { useNavigation } from "../hooks/useNavigation";
+import { LockBadge } from "./LockOverlay";
+import { usePremium } from "../context/PremiumContext";
 import type { Language, NavTopic, NavSection } from "../types";
 
 // ─────────────────────────────────────────────────────────────
@@ -72,8 +74,11 @@ function TopicTree({ topics, activePath, sc, secRgb, onNavigate, indentPx = 40 }
   return (
     <>
       {topics.map((t) => {
-        const isActive = activePath === t.path;
-        const isDone   = !!t.completed;
+        const isActive  = activePath === t.path;
+        const isDone    = !!t.completed;
+        // Backend is the authority — use t.isLocked directly.
+        // It already accounts for language-level locking AND topic-level locking.
+        const isLocked  = !!t.isLocked;
 
         return (
           <div key={t.path}>
@@ -115,13 +120,16 @@ function TopicTree({ topics, activePath, sc, secRgb, onNavigate, indentPx = 40 }
 
               {/* Right side: time / done tick / lock / active arrow */}
               <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
-                {t.estimatedMins && !isActive && (
+                {t.estimatedMins && !isActive && !isLocked && (
                   <span style={{ fontSize: 9, color: C.dim }}>{t.estimatedMins}m</span>
                 )}
                 {isDone && !isActive && (
                   <span style={{ fontSize: 10, color: "#4ade80" }}>✓</span>
                 )}
-                {t.completed === false && (
+                {/* Premium lock icon */}
+                {isLocked && <LockBadge />}
+                {/* Legacy completed=false lock */}
+                {t.completed === false && !isLocked && (
                   <span style={{ fontSize: 9, color: C.dim }}>🔒</span>
                 )}
                 {isActive && <ChevronRight size={10} color={sc} />}

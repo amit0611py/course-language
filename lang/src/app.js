@@ -12,7 +12,6 @@ const buildApp = (opts = {}) => {
           ? { target: 'pino-pretty', options: { colorize: true } }
           : undefined,
     },
-    // Return validation errors as clean JSON (not raw Fastify internals)
     ajv: {
       customOptions: {
         removeAdditional: 'all',
@@ -27,27 +26,26 @@ const buildApp = (opts = {}) => {
   app.register(require('./plugins/redis'));
   app.register(require('./plugins/cors'));
   app.register(require('./plugins/rateLimit'));
-  app.register(require('./plugins/static'));   // serves /public/* (icons, etc.)
-  app.register(require('./plugins/adminAuth')); // decorates verifyAdminKey
+  app.register(require('./plugins/static'));
+  app.register(require('./plugins/adminAuth'));
+  app.register(require('./plugins/userAuth'));   // decorates verifyAuth / requireAuth
 
   // ── Routes ─────────────────────────────────────────────────────────
-  app.register(require('./routes'), { prefix: '/v1' });
+  app.register(require('./routes'),               { prefix: '/v1'       });
+  app.register(require('./routes/auth'),          { prefix: '/v1/auth'  });
+  app.register(require('./routes/payment'),       { prefix: '/v1/payment' });
   app.register(require('./admin/routes/index.admin'), { prefix: '/v1/admin' });
 
-  // ── Health check (no prefix — infra/load-balancer pings this) ──────
+  // ── Health check ────────────────────────────────────────────────────
   app.get('/health', { logLevel: 'warn' }, async () => ({
     status: 'ok',
     timestamp: new Date().toISOString(),
   }));
 
-  // ── Global error handler ────────────────────────────────────────────
+  // ── Global error handler ─────────────────────────────────────────────
   app.setErrorHandler((err, req, reply) => {
     const status = err.statusCode ?? 500;
-
-    if (status >= 500) {
-      req.log.error({ err }, 'Unhandled server error');
-    }
-
+    if (status >= 500) req.log.error({ err }, 'Unhandled server error');
     reply.status(status).send({
       error: {
         code:    err.code ?? 'INTERNAL_ERROR',
@@ -56,7 +54,7 @@ const buildApp = (opts = {}) => {
     });
   });
 
-  // ── 404 handler ─────────────────────────────────────────────────────
+  // ── 404 handler ──────────────────────────────────────────────────────
   app.setNotFoundHandler((req, reply) => {
     reply.status(404).send({
       error: {

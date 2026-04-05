@@ -1,0 +1,382 @@
+{
+  "_comment_file": "ContentEngine bulk/language template. ALWAYS post to /v1/admin/bulk/language — never bulk/topic. Remove all _comment fields before posting.",
+
+  "language": {
+    "_comment": "slug MUST match the first dot-segment of every topic path below",
+    "slug":        "LANGUAGE_SLUG",
+    "name":        "Language Display Name",
+    "description": "One sentence describing the language and its primary use case.",
+    "iconUrl":     "/icons/LANGUAGE_SLUG.svg",
+    "sortOrder":   1,
+    "meta": {
+      "color":   "#hexcolor",
+      "tagline": "Short punchy tagline for the language."
+    }
+  },
+
+  "_comment_sections": "CRITICAL: INCLUDE ALL SECTIONS FOR THIS LANGUAGE IN EVERY FILE via bulk/language. If you use bulk/topic or omit sections here, they auto-create with sortOrder:99 which never gets corrected. sortOrder is per-sibling-group — each section and parent has its own independent sequence.",
+  "sections": [
+    { "slug": "section-one",   "title": "Section One Display Name",   "sortOrder": 1 },
+    { "slug": "section-two",   "title": "Section Two Display Name",   "sortOrder": 2 },
+    { "slug": "section-three", "title": "Section Three Display Name", "sortOrder": 3 },
+    { "slug": "projects",      "title": "Projects",                   "sortOrder": 4 }
+  ],
+
+  "topics": [
+
+    {
+      "_comment": "SECTION ROOT — Required for every section that has topics. Depth 1. isDeepDive: false always. sortOrder: 0 always. Minimal content — one text block.",
+      "path":          "LANGUAGE_SLUG.section-one",
+      "title":         "Section One Display Name",
+      "section":       "section-one",
+      "difficulty":    "beginner",
+      "estimatedMins": 2,
+      "tags":          ["lang-slug", "section-keyword"],
+      "isDeepDive":    false,
+      "isPublished":   true,
+      "sortOrder":     0,
+      "blocks": [
+        {
+          "type": "text",
+          "data": {
+            "content": "2-3 sentences describing what this section covers and why it matters to learners."
+          }
+        }
+      ]
+    },
+
+    {
+      "_comment": "STANDARD TOPIC — Depth 2. Full content with all required block types.",
+      "path":          "LANGUAGE_SLUG.section-one.first-topic",
+      "title":         "First Topic Title",
+      "section":       "section-one",
+      "difficulty":    "beginner",
+      "estimatedMins": 15,
+      "tags":          ["lang-slug", "topic-keyword", "specific-concept"],
+      "isDeepDive":    false,
+      "isPublished":   true,
+      "sortOrder":     1,
+      "blocks": [
+
+        {
+          "_comment": "REQUIRED: Intro text. 2-4 sentences. What this covers and why it matters.",
+          "type": "text",
+          "data": {
+            "content": "Introduction paragraph. Explain what this topic covers. Explain why understanding it matters — what it unlocks or what problems it solves."
+          }
+        },
+
+        {
+          "_comment": "REQUIRED: 4-6 cards covering the key concepts of this topic.",
+          "type": "concept_cards",
+          "data": {
+            "items": [
+              {
+                "icon":  "⚙️",
+                "title": "Concept One",
+                "desc":  "Explanation of the first concept. Use \\n for line breaks. Be specific — explain the mechanism, not just the definition. Include examples where they fit naturally."
+              },
+              {
+                "icon":  "🔄",
+                "title": "Concept Two",
+                "desc":  "Explanation of the second concept. Contrast with concept one if related."
+              },
+              {
+                "icon":  "📦",
+                "title": "Concept Three",
+                "desc":  "Explanation of the third concept."
+              },
+              {
+                "icon":  "⚡",
+                "title": "Concept Four",
+                "desc":  "Explanation of the fourth concept."
+              },
+              {
+                "icon":  "🛡️",
+                "title": "Concept Five",
+                "desc":  "Explanation of the fifth concept."
+              },
+              {
+                "icon":  "✅",
+                "title": "When to Use This",
+                "desc":  "Practical guidance on when to apply this concept vs alternatives. Include trade-offs."
+              }
+            ]
+          }
+        },
+
+        {
+          "_comment": "OPTIONAL: Diagram. Only include when a visual genuinely aids understanding. Remove this block if not needed.",
+          "type": "diagram",
+          "data": {
+            "diagramKey":  "LANGUAGE_SLUG_topic_description",
+            "title":       "Diagram Title",
+            "diagramType": "mermaid",
+            "mermaid":     "graph TD\n  A[Start] --> B[Step]\n  B --> C[End]\n  style A fill:#1e3a5f,color:#93c5fd\n  style B fill:#14532d,color:#86efac\n  style C fill:#7c2d12,color:#fed7aa"
+          }
+        },
+
+        {
+          "_comment": "OPTIONAL: Code block. For code-heavy topics. Rich comments explain every non-obvious line. Remove if this topic doesn't need code examples.",
+          "type": "code",
+          "data": {
+            "language": "javascript",
+            "filename": "topic_demo.js",
+            "runnable": false,
+            "snippet":  "// --- Section heading ---\n// Explanation of what this section demonstrates\nconst example = 'real-looking code'\n\n// --- Another section ---\n// The BAD way (with explanation why)\n// const bad = doItWrong()\n\n// The GOOD way (with explanation why)\nconst good = doItRight()"
+          }
+        },
+
+        {
+          "_comment": "INCLUDE when there is a real gotcha. Bold the key phrase. Explain the trap and the fix.",
+          "type": "warning",
+          "data": {
+            "content": "**Key phrase that names the trap:** Full explanation of what goes wrong, why it goes wrong, and exactly how to avoid it. Be specific — name the error message or failure mode if there is one."
+          }
+        },
+
+        {
+          "_comment": "OPTIONAL: Note for helpful tips, real-world context, or API references.",
+          "type": "note",
+          "data": {
+            "content": "**Context label:** Supporting information that helps the learner but isn't critical to understanding the concept."
+          }
+        },
+
+        {
+          "_comment": "REQUIRED: First quiz. Tests the main concept. 4 options, exactly one correct.",
+          "type": "quiz",
+          "data": {
+            "questionId":   "q_LANGSLUG_sectionslug_topicslug_001",
+            "questionText": "Question that tests understanding of the core concept covered in this topic?",
+            "questionType": "mcq",
+            "options": [
+              { "id": "a", "text": "Plausible wrong answer — tempting to a learner who partially understands", "correct": false },
+              { "id": "b", "text": "Correct answer — specific and unambiguous",                               "correct": true  },
+              { "id": "c", "text": "Plausible wrong answer — common misconception",                          "correct": false },
+              { "id": "d", "text": "Plausible wrong answer — another common misconception",                  "correct": false }
+            ],
+            "explanation": "Why b is correct. Name the mechanism or rule that makes it correct. Why a is wrong. Why c is wrong. Why d is wrong. The explanation should teach something even to someone who got it right."
+          }
+        },
+
+        {
+          "_comment": "REQUIRED: Second quiz. Tests an edge case, real-world scenario, or failure mode.",
+          "type": "quiz",
+          "data": {
+            "questionId":   "q_LANGSLUG_sectionslug_topicslug_002",
+            "questionText": "Scenario-based question: given X situation, what happens / what should you do?",
+            "questionType": "mcq",
+            "options": [
+              { "id": "a", "text": "Option A", "correct": false },
+              { "id": "b", "text": "Option B", "correct": false },
+              { "id": "c", "text": "Option C", "correct": true  },
+              { "id": "d", "text": "Option D", "correct": false }
+            ],
+            "explanation": "Why c is correct in this scenario. Reference the specific mechanism or behaviour that determines the answer."
+          }
+        }
+
+      ]
+    },
+
+    {
+      "_comment": "DEEP DIVE — isDeepDive: true. NOTE: depth and isDeepDive are INDEPENDENT. A depth-2 topic can be isDeepDive:false (like a project). A depth-3 topic can be isDeepDive:true. Set isDeepDive based on whether it is optional enrichment — not based on its depth level.",
+      "path":          "LANGUAGE_SLUG.section-one.first-topic.deep-dive-slug",
+      "title":         "Deep Dive Title — What This Reveals",
+      "section":       "section-one",
+      "difficulty":    "advanced",
+      "estimatedMins": 18,
+      "tags":          ["lang-slug", "deep-topic", "internals"],
+      "isDeepDive":    true,
+      "isPublished":   true,
+      "sortOrder":     1,
+      "blocks": [
+
+        {
+          "type": "text",
+          "data": {
+            "content": "What this deep dive covers that the parent topic didn't. Explain the internal mechanism, edge case, or advanced pattern. Who needs this — when does this knowledge matter?"
+          }
+        },
+
+        {
+          "type": "concept_cards",
+          "data": {
+            "items": [
+              { "icon": "🔬", "title": "Internal Mechanism", "desc": "How it works under the hood. Specific, technical, precise." },
+              { "icon": "⚠️", "title": "Edge Case",          "desc": "The non-obvious behaviour that bites experienced developers." },
+              { "icon": "🔧", "title": "Advanced Pattern",   "desc": "How to use this knowledge to write better code." },
+              { "icon": "📊", "title": "When This Matters",  "desc": "Real-world scenario where this deep knowledge is required." }
+            ]
+          }
+        },
+
+        {
+          "type": "warning",
+          "data": {
+            "content": "**Advanced trap:** The non-obvious failure mode that this deep dive reveals. Specific error or behaviour."
+          }
+        },
+
+        {
+          "type": "quiz",
+          "data": {
+            "questionId":   "q_LANGSLUG_sectionslug_topicslug_deep_001",
+            "questionText": "Advanced question that can only be answered correctly with the knowledge from this deep dive.",
+            "questionType": "mcq",
+            "options": [
+              { "id": "a", "text": "Superficially correct but misses the mechanism", "correct": false },
+              { "id": "b", "text": "Correct — requires deep understanding",           "correct": true  },
+              { "id": "c", "text": "Common misconception at this level",               "correct": false },
+              { "id": "d", "text": "Incorrect but plausible",                          "correct": false }
+            ],
+            "explanation": "Why b is correct. Reference the internal mechanism covered in this deep dive. Why a is a superficially tempting but wrong answer."
+          }
+        },
+
+        {
+          "type": "quiz",
+          "data": {
+            "questionId":   "q_LANGSLUG_sectionslug_topicslug_deep_002",
+            "questionText": "Second deep question on a different aspect or edge case.",
+            "questionType": "mcq",
+            "options": [
+              { "id": "a", "text": "Option A", "correct": false },
+              { "id": "b", "text": "Option B", "correct": false },
+              { "id": "c", "text": "Option C", "correct": false },
+              { "id": "d", "text": "Option D", "correct": true  }
+            ],
+            "explanation": "Why d is correct."
+          }
+        }
+
+      ]
+    },
+
+    {
+      "_comment": "PROJECTS ROOT — Required before any project topic. Depth 1. Minimal.",
+      "path":          "LANGUAGE_SLUG.projects",
+      "title":         "Projects",
+      "section":       "projects",
+      "difficulty":    "beginner",
+      "estimatedMins": 2,
+      "tags":          ["lang-slug", "projects"],
+      "isDeepDive":    false,
+      "isPublished":   true,
+      "sortOrder":     0,
+      "blocks": [
+        {
+          "type": "text",
+          "data": {
+            "content": "Brief overview of the projects track: how many projects, what progression looks like, what the learner will be able to build by the end."
+          }
+        }
+      ]
+    },
+
+    {
+      "_comment": "PROJECT TOPIC — Depth 2 under projects. FORBIDDEN blocks: code, quiz. ALLOWED blocks only: text, concept_cards, note, warning. Projects teach architecture — learner writes all code themselves.",
+      "path":          "LANGUAGE_SLUG.projects.project-slug",
+      "title":         "Project N — Project Title",
+      "section":       "projects",
+      "difficulty":    "beginner",
+      "estimatedMins": 180,
+      "tags":          ["lang-slug", "project", "key-concept-1", "key-concept-2"],
+      "isDeepDive":    false,
+      "isPublished":   true,
+      "sortOrder":     1,
+      "blocks": [
+
+        {
+          "type": "text",
+          "data": {
+            "content": "What the project is, what it teaches, and why this approach rather than a simpler one. Set expectations clearly."
+          }
+        },
+
+        {
+          "type": "concept_cards",
+          "data": {
+            "items": [
+              { "icon": "🎯", "title": "What You Will Build",   "desc": "Concrete description of the finished product. What commands it runs. What it produces. What a user experiences." },
+              { "icon": "📚", "title": "Concepts You Will Use", "desc": "Bulleted list of every concept from the curriculum that appears in this project." },
+              { "icon": "🆚", "title": "Why This Approach",     "desc": "What makes this project's design choices interesting or instructive. What you would do differently in production." },
+              { "icon": "📏", "title": "Rules",                 "desc": "Explicit constraints. What you cannot use (no framework X, no library Y). What you must use. Why the constraints exist." },
+              { "icon": "✅", "title": "Definition of Done",    "desc": "Exact acceptance criteria. Every command that must work. Every output that must appear. Specific and testable." }
+            ]
+          }
+        },
+
+        {
+          "type": "note",
+          "data": {
+            "content": "**Setup:** Any prerequisites, API keys, or one-time setup required before starting Step 1."
+          }
+        },
+
+        {
+          "type": "text",
+          "data": {
+            "content": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSTEP 1 — Step One Title\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          }
+        },
+
+        {
+          "type": "concept_cards",
+          "data": {
+            "items": [
+              { "icon": "🏗️", "title": "What to Build",      "desc": "Specific instructions for this step. Name the file, function, or module. Describe the interface and behaviour. Be precise enough that the learner knows exactly what success looks like." },
+              { "icon": "⚙️", "title": "How It Works",       "desc": "The concept behind this step. Why you build it this way. What the underlying mechanism is." },
+              { "icon": "🔧", "title": "Implementation Notes","desc": "Specific guidance on the tricky parts. Common mistakes to watch for. Which approach to use and why." },
+              { "icon": "✅", "title": "Step 1 Checkpoint",  "desc": "Exact verification: what command to run, what output to expect, what state to check in the database/file/terminal. Specific and unambiguous." }
+            ]
+          }
+        },
+
+        {
+          "type": "text",
+          "data": {
+            "content": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nSTEP 2 — Step Two Title\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          }
+        },
+
+        {
+          "type": "concept_cards",
+          "data": {
+            "items": [
+              { "icon": "🏗️", "title": "What to Build",    "desc": "Step 2 instructions." },
+              { "icon": "⚙️", "title": "How It Works",     "desc": "Step 2 concept." },
+              { "icon": "✅", "title": "Step 2 Checkpoint","desc": "Step 2 verification criteria." }
+            ]
+          }
+        },
+
+        {
+          "_comment": "Continue with more STEP N text + concept_cards blocks as needed",
+
+          "type": "note",
+          "data": {
+            "content": "**What you built and why it matters:** Reflection on the completed project. What concepts it demonstrated. How this maps to real-world systems. What would change in a production version."
+          }
+        },
+
+        {
+          "type": "warning",
+          "data": {
+            "content": "**Known limitations:** Specific things this project intentionally omits for simplicity. What would need to change before deploying to production. This teaches the learner what to think about next."
+          }
+        },
+
+        {
+          "type": "text",
+          "data": {
+            "content": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nProject N+1 Preview\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nBrief description of what the next project adds and how it builds on this one."
+          }
+        }
+
+      ]
+    }
+
+  ]
+}

@@ -79,3 +79,48 @@ export const deleteLanguageHard = (slug: string, mode: string) => api.delete(`/d
 export const getTopicsByLang = (lang: string) =>
   api.get("/topics", { params: { language: lang, limit: 200, offset: 0 } })
      .then(r => (r.data.topics ?? []) as { path: string; title: string; depth: number }[]);
+// ── Paid content system ───────────────────────────────────────
+
+// Content tiers
+export const bulkSetContentTier     = (body: unknown) => api.post("/paid/bulk-tier", body).then(r => r.data);
+export const setContentTierByLang   = (body: unknown) => api.post("/paid/tier-by-language", body).then(r => r.data);
+export const getPaidSections        = (langSlug: string) => api.get(`/paid/sections/${langSlug}`).then(r => r.data);
+export const getPaidTopicsTree      = (langSlug: string, params?: Record<string, string>) =>
+  api.get(`/paid/topics-tree/${langSlug}`, { params }).then(r => r.data);
+
+// Plans
+export const getPaidPlans           = () => api.get("/paid/plans").then(r => r.data.plans);
+export const createPaidPlan         = (body: unknown) => api.post("/paid/plans", body).then(r => r.data.plan);
+export const updatePaidPlan         = (id: string, body: unknown) => api.put(`/paid/plans/${id}`, body).then(r => r.data.plan);
+export const deletePaidPlan         = (id: string) => api.delete(`/paid/plans/${id}`).then(r => r.data);
+export const generatePlanTokens     = (planId: string, body: unknown) =>
+  api.post(`/paid/plans/${planId}/generate-token`, body).then(r => r.data);
+
+// Users
+export const getPaidUsers           = (params?: Record<string, unknown>) =>
+  api.get("/paid/users", { params }).then(r => r.data);
+export const getPaidUser            = (id: string) => api.get(`/paid/users/${id}`).then(r => r.data);
+export const patchPaidUser          = (id: string, body: unknown) => api.patch(`/paid/users/${id}`, body).then(r => r.data);
+export const grantSubscription      = (userId: string, body: unknown) =>
+  api.post(`/paid/users/${userId}/grant-subscription`, body).then(r => r.data);
+export const revokeSubscription     = (userId: string, subId: string) =>
+  api.delete(`/paid/users/${userId}/subscriptions/${subId}`).then(r => r.data);
+
+// Interviews
+export const getPaidInterviews      = (params?: Record<string, unknown>) =>
+  api.get("/paid/interviews", { params }).then(r => r.data);
+export const createPaidInterview    = (body: unknown) => api.post("/paid/interviews", body).then(r => r.data);
+export const updatePaidInterview    = (id: string, body: unknown) => api.put(`/paid/interviews/${id}`, body).then(r => r.data);
+export const deletePaidInterview    = (id: string) => api.delete(`/paid/interviews/${id}`).then(r => r.data);
+
+// Coding
+export const getPaidCoding          = (params?: Record<string, unknown>) =>
+  api.get("/paid/coding", { params }).then(r => r.data);
+export const createPaidCoding       = (body: unknown) => api.post("/paid/coding", body).then(r => r.data);
+export const deletePaidCoding       = (slug: string) => api.delete(`/paid/coding/${slug}`).then(r => r.data);
+
+// Videos
+export const getPaidVideos          = () => api.get("/paid/videos").then(r => r.data);
+export const createPaidVideo        = (body: unknown) => api.post("/paid/videos", body).then(r => r.data);
+export const updatePaidVideo        = (id: string, body: unknown) => api.put(`/paid/videos/${id}`, body).then(r => r.data);
+export const deletePaidVideo        = (id: string) => api.delete(`/paid/videos/${id}`).then(r => r.data);

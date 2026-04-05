@@ -4,6 +4,8 @@ import { useTopic } from "../hooks/useTopic";
 import { useNavigation } from "../hooks/useNavigation";
 import BlockRenderer from "./blocks/BlockRenderer";
 import DeepDiveSection from "./DeepDiveSection";
+import LockOverlay from "./LockOverlay";
+import { usePremium } from "../context/PremiumContext";
 import type { Language, NavTopic } from "../types";
 
 // ─────────────────────────────────────────────────────────────
@@ -215,6 +217,18 @@ export default function TopicPage({ language }: TopicPageProps) {
               🔬 Deep Dive
             </span>
           )}
+          {/* Premium badge */}
+          {topic.isPremium && (
+            <span style={{
+              fontSize: 10, fontWeight: 800, letterSpacing: 0.4,
+              color: "#a78bfa",
+              background: "rgba(124,58,237,.15)",
+              border: "1px solid rgba(124,58,237,.3)",
+              padding: "3px 10px", borderRadius: 20,
+            }}>
+              🔒 Premium
+            </span>
+          )}
           {topic.difficulty && <DifficultyBadge level={topic.difficulty} />}
           {topic.estimatedMins && (
             <span style={{ color: C.dim, fontSize: 11 }}>
@@ -275,11 +289,17 @@ export default function TopicPage({ language }: TopicPageProps) {
 
       {/* ══════════════════════════════════════════════════════
           CONTENT BLOCKS
-          (BlockRenderer injects Code Playground / Visual Diagram
-           / Test Your Knowledge headings automatically)
+          Wrapped in LockOverlay when topic is premium and user is free
           ════════════════════════════════════════════════════ */}
       <div className="fu" style={{ animationDelay: ".08s" }}>
-        <BlockRenderer blocks={topic.blocks} accentColor={accentColor} />
+        <LockOverlay
+          locked={!!topic.isLocked}
+          label="Premium Topic"
+          description="This is advanced content. Upgrade to Premium to read the full topic, code examples, and exercises."
+          showBlurredPreview
+        >
+          <BlockRenderer blocks={topic.blocks} accentColor={accentColor} />
+        </LockOverlay>
       </div>
 
       {/* ══════════════════════════════════════════════════════
