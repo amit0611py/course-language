@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY || "dev-admin-key-change-me";
+const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY || "your-actual-secret-key";
 
 export const api = axios.create({
   baseURL: "/v1/admin",
